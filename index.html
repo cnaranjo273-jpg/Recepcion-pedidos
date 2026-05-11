@@ -665,15 +665,12 @@
                     <div class="campo-form">
                         <label for="estado">Estado</label>
                         <select id="estado" name="estado">
-                            <option value="Pendiente">Pendiente</option>
-                            <option value="En Ruta">En Ruta</option>
-                            <option value="Entregado">Entregado</option>
-                            <option value="Cancelado">Cancelado</option>
+                            <option value="Pagado">Pagado</option>
                         </select>
                     </div>
                     <div class="campo-form">
                         <label for="telefono">Teléfono *</label>
-                        <input type="tel" id="telefono" name="telefono" placeholder="+52 555 123 4567" required>
+                        <input type="tel" id="telefono" name="telefono" placeholder="+593 555 123 4567" required>
                     </div>
                     <div class="campo-form completo">
                         <label for="notas">Notas</label>
@@ -917,27 +914,6 @@
             actualizarTablaEntregas();
             actualizarContadorEntregasHoy();
             renderizarCalendario();
-        }
-
-        function usarDatosDemo() {
-            const hoy = new Date().toISOString().split('T')[0];
-            const manana = new Date(Date.now() + 86400000).toISOString().split('T')[0];
-            const pasadoManana = new Date(Date.now() + 172800000).toISOString().split('T')[0];
-
-            entregas = [
-                { id_pedido: 'PED-001', cliente: 'María García', direccion: 'Av. Fransisco de Orellana',
-                    fecha_entrega: hoy, hora_entrega: '10:00', estado: 'Pendiente', telefono: '5551234567',
-                    notas: 'Tocar el timbre 3 veces' },
-                { id_pedido: 'PED-002', cliente: 'Juan López', direccion: 'Calle America',
-                    fecha_entrega: hoy, hora_entrega: '10:30', estado: 'En Ruta', telefono: '3339876543',
-                    notas: 'Dejar con el portero' },
-                { id_pedido: 'PED-003', cliente: 'Ana Martínez', direccion: 'Av. Occidental',
-                    fecha_entrega: manana, hora_entrega: '14:00', estado: 'Pendiente', telefono: '8187654321',
-                    notas: 'Llamar al llegar' },
-                { id_pedido: 'PED-004', cliente: 'Carlos Ruiz', direccion: 'Calle Jorge Piedra',
-                    fecha_entrega: pasadoManana, hora_entrega: '09:00', estado: 'Entregado',
-                    telefono: '2223456789', notas: '' },
-            ];
         }
 
         function actualizarTablaEntregas() {
