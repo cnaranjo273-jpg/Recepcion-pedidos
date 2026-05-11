@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de Entregas</title>
+    <style>
+        :root {
+            --durazno: #FEC89A;
+            --durazno-claro: #FFDAB9;
+            --durazno-oscuro: #FDBB7C;
+            --vino: #722F37;
+            --vino-claro: #8B3A42;
+            --vino-oscuro: #5C1A27;
+            --crema: #FFF8F0;
+            --blanco: #FFFFFF;
+            --texto: #3D1C1C;
+            --gris: #6B5B5B;
+            --verde: #4CAF50;
+            --rojo: #D32F2F;
+            --ambar: #F9A825;
+            --sombra: 0 8px 32px rgba(114, 47, 55, 0.12);
+            --sombra-hover: 0 12px 40px rgba(114, 47, 55, 0.2);
+            --borde-radius: 16px;
+            --transicion: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(160deg, #fef5ec 0%, #fdf0e0 25%, #fbe8d3 50%, #fdf2e8 75%, #fef9f4 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--texto);
+            line-height: 1.6;
+        }
+
+        .banner {
+            background: linear-gradient(135deg, #FEC89A 0%, #FDBB7C 15%, #f0a07a 30%, #d4897a 45%, #b87078 60%, #8B3A42 78%, #722F37 100%);
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 24px rgba(114, 47, 55, 0.3);
+        }
+
+        .banner-inner {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 28px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .banner-logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .banner-icono {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: var(--transicion);
+        }
+
+        .banner-icono:hover {
+            transform: rotate(-5deg) scale(1.05);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .banner h1 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .banner-subtitle {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+
+        .banner-badge {
+            background: rgba(255, 255, 255, 0.22);
+            backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(255, 255, 255, 0.35);
+            border-radius: 40px;
+            padding: 10px 20px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transicion);
+            cursor: default;
+        }
+
+        .banner-badge .punto {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4CAF50;
+            animation: pulso 2s infinite;
+        }
+
+        @keyframes pulso {
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 12px rgba(76, 175, 80, 0);
+            }
+        }
+
+        .contenedor-principal {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 24px 20px 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 24px;
+        }
+
+        @media (max-width: 1024px) {
+            .contenedor-principal {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .tarjeta {
+            background: var(--blanco);
+            border-radius: var(--borde-radius);
+            padding: 28px 24px;
+            box-shadow: var(--sombra);
+            border: 1px solid rgba(114, 47, 55, 0.06);
+            transition: var(--transicion);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tarjeta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--durazno), var(--vino-claro), var(--vino));
+            border-radius: var(--borde-radius) var(--borde-radius) 0 0;
+        }
+
+        .tarjeta:hover {
+            box-shadow: var(--sombra-hover);
+            transform: translateY(-2px);
+        }
+
+        .tarjeta h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--vino);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.3px;
+        }
+
+        .tarjeta h2 .emoji-titulo {
+            font-size: 1.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .campo-form {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .campo-form.completo {
+            grid-column: 1 / -1;
+        }
+
+        .campo-form label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--vino);
+            letter-spacing: 0.2px;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }
+
+        .campo-form input,
+        .campo-form select,
+        .campo-form textarea {
+            padding: 11px 14px;
+            border: 2px solid #e8d5cc;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: var(--transicion);
+            background: #fefaf7;
+            color: var(--texto);
+            resize: vertical;
+        }
+
+        .campo-form input:focus,
+        .campo-form select:focus,
+        .campo-form textarea:focus {
+            outline: none;
+            border-color: var(--vino-claro);
+            box-shadow: 0 0 0 4px rgba(114, 47, 55, 0.08);
+            background: #fff;
+        }
+
+        .campo-form input::placeholder,
+        .campo-form textarea::placeholder {
+            color: #c4a9a0;
+        }
+
+        .campo-form textarea {
+            min-height: 70px;
+            max-height: 150px;
+        }
+
+        .campo-form select {
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23722F37' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 38px;
+        }
+
+        .btn-enviar {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, var(--vino), var(--vino-oscuro));
+            color: #fff;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            transition: var(--transicion);
+            text-transform: uppercase;
+            box-shadow: 0 4px 16px rgba(114, 47, 55, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-enviar:hover {
+            background: linear-gradient(135deg, var(--vino-claro), var(--vino));
+            box-shadow: 0 6px 24px rgba(114, 47, 55, 0.45);
+            transform: translateY(-1px);
+        }
+        .btn-enviar:active {
+            transform: scale(0.97);
+            box-shadow: 0 2px 8px rgba(114, 47, 55, 0.3);
+        }
+        .btn-enviar:disabled {
+            background: #c4a9a0;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .btn-enviar .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.4);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: girar 0.7s linear infinite;
+            margin-right: 8px;
+        }
+        .btn-enviar.cargando .spinner {
+            display: inline-block;
+        }
+        .btn-enviar.cargando .texto-btn {
+            display: none;
+        }
+
+        @keyframes girar {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .notificacion {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-top: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            animation: deslizarEntrada 0.5s ease;
+            font-size: 0.9rem;
+        }
+
+        @keyframes deslizarEntrada {
+            from {
+                opacity: 0;
+                transform: translateY(-16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .notificacion.exito {
+            background: #e8f5e9;
+            border: 2px solid #4CAF50;
+            color: #1b5e20;
+        }
+        .notificacion.error {
+            background: #ffebee;
+            border: 2px solid #D32F2F;
+            color: #7f0000;
+        }
+        .notificacion.advertencia {
+            background: #fff8e1;
+            border: 2px solid #F9A825;
+            color: #5d3a00;
+        }
+        .notificacion .icono-notif {
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        .tabla-contenedor {
+            overflow-x: auto;
+            max-height: 450px;
+            overflow-y: auto;
+            border-radius: 12px;
+            border: 1px solid #f0e3da;
+        }
+
+        .tabla-contenedor::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .tabla-contenedor::-webkit-scrollbar-track {
+            background: #fefaf7;
+            border-radius: 10px;
+        }
+        .tabla-contenedor::-webkit-scrollbar-thumb {
+            background: var(--durazno-oscuro);
+            border-radius: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            min-width: 700px;
+        }
+
+        table thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        table thead th {
+            background: linear-gradient(180deg, #fdf0e4, #fbe8d5);
+            color: var(--vino);
+            font-weight: 700;
+            padding: 13px 10px;
+            text-align: left;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            border-bottom: 3px solid var(--vino);
+            white-space: nowrap;
+        }
+
+        table tbody td {
+            padding: 11px 10px;
+            border-bottom: 1px solid #f5e8de;
+            transition: var(--transicion);
+        }
+
+        table tbody tr {
+            transition: var(--transicion);
+        }
+        table tbody tr:hover {
+            background: #fef9f4;
+        }
+        table tbody tr.conflicto-fila {
+            background: #fff5f5 !important;
+            border-left: 4px solid #D32F2F;
+        }
+        table tbody tr.conflicto-fila td:first-child {
+            padding-left: 10px;
+        }
+
+        .estado-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+        .estado-pendiente {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        .estado-en-ruta {
+            background: #e3f2fd;
+            color: #0d47a1;
+        }
+        .estado-entregado {
+            background: #e8f5e9;
+            color: #1b5e20;
+        }
+        .estado-cancelado {
+            background: #fce4ec;
+            color: #880e4f;
+        }
+
+        .conflicto-icono {
+            color: #D32F2F;
+            font-weight: bold;
+            animation: pulso 1.5s infinite;
+            display: inline-block;
+        }
+
+        .calendario-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        .calendario-dia-header {
+            font-weight: 700;
+            color: var(--vino);
+            padding: 8px;
+            background: #fdf0e4;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+
+        .calendario-dia {
+            aspect-ratio: 1;
+            border-radius: 10px;
+            padding: 5px;
+            cursor: pointer;
+            transition: var(--transicion);
+            position: relative;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid transparent;
+            background: #fefaf7;
+            min-height: 42px;
+        }
+
+        .calendario-dia:hover {
+            background: #fdf0e4;
+            border-color: var(--durazno-oscuro);
+            transform: scale(1.04);
+            z-index: 2;
+        }
+        .calendario-dia.hoy {
+            background: var(--vino);
+            color: #fff;
+            font-weight: 700;
+            border-color: var(--vino-oscuro);
+        }
+        .calendario-dia.con-entregas {
+            background: #fff0e6;
+            border-color: var(--durazno-oscuro);
+            position: relative;
+        }
+        .calendario-dia.con-entregas::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--vino);
+        }
+        .calendario-dia.con-conflicto {
+            background: #ffebee !important;
+            border-color: #D32F2F !important;
+            animation: pulso 2s infinite;
+        }
+        .calendario-dia.con-conflicto::after {
+            background: #D32F2F !important;
+        }
+        .calendario-dia.vacio {
+            background: transparent;
+            cursor: default;
+            border: none;
+        }
+        .calendario-dia.vacio:hover {
+            background: transparent;
+            border-color: transparent;
+            transform: none;
+        }
+
+        .calendario-mes-header {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 4px;
+            font-weight: 700;
+            color: var(--vino);
+            font-size: 1rem;
+        }
+        .calendario-mes-header button {
+            background: var(--durazno-claro);
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--vino);
+            transition: var(--transicion);
+            font-weight: 700;
+        }
+        .calendario-mes-header button:hover {
+            background: var(--durazno-oscuro);
+            color: #fff;
+        }
+
+        .tooltip-entrega {
+            display: none;
+            position: fixed;
+            background: #fff;
+            border: 2px solid var(--vino);
+            border-radius: 12px;
+            padding: 14px 18px;
+            box-shadow: var(--sombra-hover);
+            z-index: 2000;
+            font-size: 0.85rem;
+            max-width: 280px;
+            pointer-events: none;
+        }
+        .tooltip-entrega.visible {
+            display: block;
+        }
+        .tooltip-entrega h4 {
+            color: var(--vino);
+            margin-bottom: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .banner-inner {
+                padding: 12px 16px;
+                gap: 8px;
+            }
+            .banner h1 {
+                font-size: 1.3rem;
+            }
+            .banner-icono {
+                width: 38px;
+                height: 38px;
+                font-size: 22px;
+                border-radius: 10px;
+            }
+            .tarjeta {
+                padding: 20px 16px;
+            }
+            .contenedor-principal {
+                padding: 16px 10px 30px;
+                gap: 16px;
+            }
+            .form-grid {
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="banner">
+        <div class="banner-inner">
+            <div class="banner-logo">
+                <div class="banner-icono"></div>
+                <div>
+                    <h1>Gestión de Entregas</h1>
+                    <p class="banner-subtitle">Sistema de registro y calendario</p>
+                </div>
+            </div>
+            <div class="banner-badge">
+                <span class="punto"></span>
+                <span id="contador-entregas">0 entregas hoy</span>
+            </div>
+        </div>
+    </header>
+    <div class="contenedor-principal">
+        <div class="tarjeta" id="tarjeta-formulario">
+            <h2><span class="emoji-titulo"></span> Registrar Nuevo Pedido</h2>
+            <form id="form-pedido" novalidate>
+                <div class="form-grid">
+                    <div class="campo-form">
+                        <label for="id_pedido">ID Pedido *</label>
+                        <input type="text" id="id_pedido" name="id_pedido" placeholder="Ej: PED-001" required>
+                    </div>
+                    <div class="campo-form">
+                        <label for="cliente">Cliente *</label>
+                        <input type="text" id="cliente" name="cliente" placeholder="Nombre completo" required>
+                    </div>
+                    <div class="campo-form completo">
+                        <label for="direccion">Dirección *</label>
+                        <input type="text" id="direccion" name="direccion" placeholder="Calle, número, colonia, ciudad" required>
+                    </div>
+                    <div class="campo-form">
+                        <label for="fecha_entrega">Fecha de Entrega *</label>
+                        <input type="date" id="fecha_entrega" name="fecha_entrega" required>
+                    </div>
+                    <div class="campo-form">
+                        <label for="hora_entrega">Hora de Entrega *</label>
+                        <input type="time" id="hora_entrega" name="hora_entrega" required>
+                    </div>
+                    <div class="campo-form">
+                        <label for="estado">Estado</label>
+                        <select id="estado" name="estado">
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="En Ruta">En Ruta</option>
+                            <option value="Entregado">Entregado</option>
+                            <option value="Cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                    <div class="campo-form">
+                        <label for="telefono">Teléfono *</label>
+                        <input type="tel" id="telefono" name="telefono" placeholder="+52 555 123 4567" required>
+                    </div>
+                    <div class="campo-form completo">
+                        <label for="notas">Notas</label>
+                        <textarea id="notas" name="notas" placeholder="Instrucciones especiales, referencias, etc." rows="2"></textarea>
+                    </div>
+                    <button type="submit" class="btn-enviar" id="btn-enviar">
+                        <span class="spinner"></span>
+                        <span class="texto-btn"> Registrar Pedido</span>
+                    </button>
+                </div>
+            </form>
+            <div id="zona-notificacion"></div>
+        </div>
+        <div class="tarjeta" id="tarjeta-calendario">
+            <h2><span class="emoji-titulo"></span> Calendario Interactivo</h2>
+            <div class="calendario-grid" id="calendario-grid">
+            </div>
+            <div class="tooltip-entrega" id="tooltip-entrega"></div>
+            <p style="text-align:center;margin-top:12px;font-size:0.78rem;color:var(--gris);">
+                 Días con entregas &nbsp;|&nbsp;  Días con conflicto de horario
+            </p>
+        </div>
+
+        <div class="tarjeta" style="grid-column: 1 / -1;" id="tarjeta-tabla">
+            <h2><span class="emoji-titulo"></span> Entregas Registradas &nbsp;
+                <span style="font-size:0.75rem;font-weight:400;color:var(--gris);">(Datos sincronizados con Google Sheets)</span>
+            </h2>
+            <div class="tabla-contenedor">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Pedido</th>
+                            <th>Cliente</th>
+                            <th>Dirección</th>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Estado</th>
+                            <th>Teléfono</th>
+                            <th>Notas</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-entregas-body">
+                        <tr>
+                            <td colspan="9" style="text-align:center;padding:30px;color:var(--gris);">
+                                Cargando datos desde Google Sheets...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const GOOGLE_SCRIPT_URL ='https://script.google.com/macros/s/AKfycbzevMAMfxhtEUe75N3TMgTVGPLDAGcSmXwhaURCQmFXezGM9m0RveF_AGgiM9Z5rd0fWg/exec';
+        let entregas = [];
+        let calendarioMesActual = new Date().getMonth();
+        let calendarioAnioActual = new Date().getFullYear();
+        let tooltipTimeout;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            configurarFechaMinima();
+            cargarEntregas();
+            configurarFormulario();
+            renderizarCalendario();
+            actualizarContadorEntregasHoy();
+        });
+
+        function configurarFechaMinima() {
+            const hoy = new Date();
+            const fechaStr = hoy.toISOString().split('T')[0];
+            document.getElementById('fecha_entrega').setAttribute('min', fechaStr);
+            document.getElementById('fecha_entrega').value = fechaStr;
+        }
+
+        function configurarFormulario() {
+            const form = document.getElementById('form-pedido');
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await enviarPedido();
+            });
+        }
+
+        async function enviarPedido() {
+            const btn = document.getElementById('btn-enviar');
+            const zonaNotif = document.getElementById('zona-notificacion');
+            btn.classList.add('cargando');
+            btn.disabled = true;
+            zonaNotif.innerHTML = '';
+
+            const formData = {
+                id_pedido: document.getElementById('id_pedido').value.trim(),
+                cliente: document.getElementById('cliente').value.trim(),
+                direccion: document.getElementById('direccion').value.trim(),
+                fecha_entrega: document.getElementById('fecha_entrega').value,
+                hora_entrega: document.getElementById('hora_entrega').value,
+                estado: document.getElementById('estado').value,
+                telefono: document.getElementById('telefono').value.trim(),
+                notas: document.getElementById('notas').value.trim(),
+                accion: 'registrar_pedido',
+                timestamp: new Date().toISOString(),
+            };
+
+            if (!formData.id_pedido || !formData.cliente || !formData.direccion ||
+                !formData.fecha_entrega || !formData.hora_entrega || !formData.telefono) {
+                mostrarNotificacion(' Por favor completa todos los campos obligatorios (*).', 'advertencia');
+                btn.classList.remove('cargando');
+                btn.disabled = false;
+                return;
+            }
+
+            const fechaSeleccionada = new Date(formData.fecha_entrega + 'T' + formData.hora_entrega);
+            const ahora = new Date();
+            if (fechaSeleccionada < ahora && formData.fecha_entrega < new Date().toISOString().split('T')[0]) {
+                mostrarNotificacion(' La fecha de entrega no puede ser anterior a hoy.', 'advertencia');
+                btn.classList.remove('cargando');
+                btn.disabled = false;
+                return;
+            }
+
+            try {
+                const respuesta = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(formData).toString(),
+                });
+
+                mostrarNotificacion(' Pedido enviado correctamente. Verificando conflictos...', 'exito');
+
+                setTimeout(async () => {
+                    await cargarEntregas();
+                    renderizarCalendario();
+                    actualizarContadorEntregasHoy();
+                    limpiarFormulario();
+                    verificarConflictosLocales(formData);
+                }, 1500);
+
+            } catch (error) {
+                console.error('Error al enviar:', error);
+                mostrarNotificacion(' Error de conexión. Verifica la URL de Google Apps Script o tu conexión.', 'error');
+            } finally {
+                btn.classList.remove('cargando');
+                btn.disabled = false;
+            }
+        }
+
+        function verificarConflictosLocales(nuevoPedido) {
+            const mismaFecha = entregas.filter(e =>
+                e.fecha_entrega === nuevoPedido.fecha_entrega &&
+                e.id_pedido !== nuevoPedido.id_pedido
+            );
+
+            if (mismaFecha.length > 0) {
+                const horaNueva = convertirHoraAMinutos(nuevoPedido.hora_entrega);
+                let hayConflicto = false;
+                const ventanaConflicto = 60;
+
+                for (const existente of mismaFecha) {
+                    const horaExistente = convertirHoraAMinutos(existente.hora_entrega);
+                    const diferencia = Math.abs(horaNueva - horaExistente);
+                    if (diferencia <= ventanaConflicto) {
+                        hayConflicto = true;
+                        break;
+                    }
+                }
+
+                if (hayConflicto) {
+                    mostrarNotificacion(
+                        ' <strong>¡INTERFERENCIA DETECTADA!</strong> Ya existe una entrega en la misma fecha con horario cercano (±1 hora). Revisa el calendario.',
+                        'advertencia'
+                    );
+                }
+            }
+        }
+
+        function convertirHoraAMinutos(horaStr) {
+            if (!horaStr) return 0;
+            const partes = horaStr.split(':');
+            return parseInt(partes[0]) * 60 + parseInt(partes[1]);
+        }
+
+        function limpiarFormulario() {
+            document.getElementById('id_pedido').value = '';
+            document.getElementById('cliente').value = '';
+            document.getElementById('direccion').value = '';
+            document.getElementById('telefono').value = '';
+            document.getElementById('notas').value = '';
+            document.getElementById('estado').value = 'Pendiente';
+            configurarFechaMinima();
+            document.getElementById('hora_entrega').value = '';
+            document.getElementById('id_pedido').focus();
+        }
+
+        function mostrarNotificacion(mensaje, tipo) {
+            const zona = document.getElementById('zona-notificacion');
+            const iconos = { exito: '', error: '', advertencia: '' };
+            zona.innerHTML = `
+                <div class="notificacion ${tipo}">
+                    <span class="icono-notif">${iconos[tipo] || ''}</span>
+                    <span>${mensaje}</span>
+                </div>
+            `;
+
+            setTimeout(() => {
+                if (zona.querySelector('.notificacion')) {
+                    zona.querySelector('.notificacion').style.opacity = '0';
+                    zona.querySelector('.notificacion').style.transition = 'opacity 0.5s';
+                    setTimeout(() => { zona.innerHTML = ''; }, 500);
+                }
+            }, 6000);
+        }
+
+        async function cargarEntregas() {
+            try {
+                const urlGet = GOOGLE_SCRIPT_URL + '?accion=obtener_entregas&t=' + Date.now();
+                const respuesta = await fetch(urlGet, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: { 'Accept': 'application/json' },
+                });
+
+                if (respuesta.ok) {
+                    const data = await respuesta.json();
+                    if (data && Array.isArray(data)) {
+                        entregas = data;
+                    } else if (data && data.entregas && Array.isArray(data.entregas)) {
+                        entregas = data.entregas;
+                    }
+                } else {
+                    console.warn('Respuesta no OK, usando datos de muestra para demo');
+                    usarDatosDemo();
+                }
+            } catch (error) {
+                console.warn('No se pudo conectar con Google Sheets. Usando datos de demostración.', error);
+                usarDatosDemo();
+            }
+            actualizarTablaEntregas();
+            actualizarContadorEntregasHoy();
+            renderizarCalendario();
+        }
+
+        function usarDatosDemo() {
+            const hoy = new Date().toISOString().split('T')[0];
+            const manana = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+            const pasadoManana = new Date(Date.now() + 172800000).toISOString().split('T')[0];
+
+            entregas = [
+                { id_pedido: 'PED-001', cliente: 'María García', direccion: 'Av. Fransisco de Orellana',
+                    fecha_entrega: hoy, hora_entrega: '10:00', estado: 'Pendiente', telefono: '5551234567',
+                    notas: 'Tocar el timbre 3 veces' },
+                { id_pedido: 'PED-002', cliente: 'Juan López', direccion: 'Calle America',
+                    fecha_entrega: hoy, hora_entrega: '10:30', estado: 'En Ruta', telefono: '3339876543',
+                    notas: 'Dejar con el portero' },
+                { id_pedido: 'PED-003', cliente: 'Ana Martínez', direccion: 'Av. Occidental',
+                    fecha_entrega: manana, hora_entrega: '14:00', estado: 'Pendiente', telefono: '8187654321',
+                    notas: 'Llamar al llegar' },
+                { id_pedido: 'PED-004', cliente: 'Carlos Ruiz', direccion: 'Calle Jorge Piedra',
+                    fecha_entrega: pasadoManana, hora_entrega: '09:00', estado: 'Entregado',
+                    telefono: '2223456789', notas: '' },
+            ];
+        }
+
+        function actualizarTablaEntregas() {
+            const tbody = document.getElementById('tabla-entregas-body');
+            if (entregas.length === 0) {
+                tbody.innerHTML =
+                    '<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--gris);">No hay entregas registradas aún.</td></tr>';
+                return;
+            }
+
+            const conflictos = detectarConflictos();
+
+            const entregasOrdenadas = [...entregas].sort((a, b) => {
+                const fechaA = new Date(a.fecha_entrega + 'T' + (a.hora_entrega || '00:00'));
+                const fechaB = new Date(b.fecha_entrega + 'T' + (b.hora_entrega || '00:00'));
+                return fechaA - fechaB;
+            });
+
+            tbody.innerHTML = entregasOrdenadas.map(entrega => {
+                const tieneConflicto = conflictos.has(entrega.id_pedido);
+                const claseFila = tieneConflicto ? 'conflicto-fila' : '';
+                const claseEstado = obtenerClaseEstado(entrega.estado);
+                const iconoConflicto = tieneConflicto ?
+                    '<span class="conflicto-icono" title="Conflicto de horario detectado"></span>' :
+                    '<span style="color:#4CAF50;" title="Sin conflictos">✓</span>';
+
+                return `
+                    <tr class="${claseFila}">
+                        <td><strong>${escaparHTML(entrega.id_pedido)}</strong></td>
+                        <td>${escaparHTML(entrega.cliente)}</td>
+                        <td>${escaparHTML(entrega.direccion)}</td>
+                        <td>${formatearFecha(entrega.fecha_entrega)}</td>
+                        <td>${entrega.hora_entrega || '—'}</td>
+                        <td><span class="estado-badge ${claseEstado}">${escaparHTML(entrega.estado)}</span></td>
+                        <td>${escaparHTML(entrega.telefono)}</td>
+                        <td>${escaparHTML(entrega.notas || '—')}</td>
+                        <td>${iconoConflicto}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function detectarConflictos() {
+            const conflictosSet = new Set();
+            const ventanaMinutos = 60;
+
+            const porFecha = {};
+            entregas.forEach(e => {
+                if (!porFecha[e.fecha_entrega]) porFecha[e.fecha_entrega] = [];
+                porFecha[e.fecha_entrega].push(e);
+            });
+
+            for (const fecha in porFecha) {
+                const entregasDelDia = porFecha[fecha];
+                for (let i = 0; i < entregasDelDia.length; i++) {
+                    for (let j = i + 1; j < entregasDelDia.length; j++) {
+                        const h1 = convertirHoraAMinutos(entregasDelDia[i].hora_entrega);
+                        const h2 = convertirHoraAMinutos(entregasDelDia[j].hora_entrega);
+                        if (Math.abs(h1 - h2) <= ventanaMinutos) {
+                            conflictosSet.add(entregasDelDia[i].id_pedido);
+                            conflictosSet.add(entregasDelDia[j].id_pedido);
+                        }
+                    }
+                }
+            }
+            return conflictosSet;
+        }
+
+        function obtenerClaseEstado(estado) {
+            const mapa = {
+                'Pendiente': 'estado-pendiente',
+                'En Ruta': 'estado-en-ruta',
+                'Entregado': 'estado-entregado',
+                'Cancelado': 'estado-cancelado',
+            };
+            return mapa[estado] || 'estado-pendiente';
+        }
+
+        function formatearFecha(fechaStr) {
+            if (!fechaStr) return '—';
+            try {
+                const fecha = new Date(fechaStr + 'T00:00:00');
+                return fecha.toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' });
+            } catch {
+                return fechaStr;
+            }
+        }
+
+        function escaparingHTML(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function actualizarContadorEntregasHoy() {
+            const hoy = new Date().toISOString().split('T')[0];
+            const entregasHoy = entregas.filter(e => e.fecha_entrega === hoy).length;
+            document.getElementById('contador-entregas').textContent =
+                `${entregasHoy} entrega${entregasHoy !== 1 ? 's' : ''} hoy`;
+        }
+
+        function renderizarCalendario() {
+            const grid = document.getElementById('calendario-grid');
+            const anio = calendarioAnioActual;
+            const mes = calendarioMesActual;
+
+            const mesesNombres = [
+                'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+            ];
+            const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+
+            const primerDia = new Date(anio, mes, 1);
+            const ultimoDia = new Date(anio, mes + 1, 0);
+            const diasEnMes = ultimoDia.getDate();
+            const diaInicioSemana = primerDia.getDay();
+
+            const hoy = new Date();
+            const hoyStr = hoy.toISOString().split('T')[0];
+
+            const entregasPorFecha = {};
+            const conflictos = detectarConflictos();
+            entregas.forEach(e => {
+                if (!entregasPorFecha[e.fecha_entrega]) entregasPorFecha[e.fecha_entrega] = [];
+                entregasPorFecha[e.fecha_entrega].push(e);
+            });
+
+            let html = '';
+
+            html += `
+                <div class="calendario-mes-header">
+                    <button onclick="cambiarMes(-1)" title="Mes anterior">◀</button>
+                    <span>${mesesNombres[mes]} ${anio}</span>
+                    <button onclick="cambiarMes(1)" title="Mes siguiente">▶</button>
+                </div>
+            `;
+
+            diasSemana.forEach(dia => {
+                html += `<div class="calendario-dia-header">${dia}</div>`;
+            });
+
+            for (let i = 0; i < diaInicioSemana; i++) {
+                html += '<div class="calendario-dia vacio"></div>';
+            }
+
+            for (let dia = 1; dia <= diasEnMes; dia++) {
+                const fechaStr = `${anio}-${String(mes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+                const esHoy = fechaStr === hoyStr;
+                const entregasDia = entregasPorFecha[fechaStr] || [];
+                const tieneEntregas = entregasDia.length > 0;
+
+                let tieneConflictoDia = false;
+                if (tieneEntregas) {
+                    tieneConflictoDia = entregasDia.some(e => conflictos.has(e.id_pedido));
+                }
+
+                let clases = 'calendario-dia';
+                if (esHoy) clases += ' hoy';
+                if (tieneConflictoDia) clases += ' con-conflicto';
+                else if (tieneEntregas) clases += ' con-entregas';
+
+                const tituloTooltip = tieneEntregas ?
+                    entregasDia.map(e => `${e.hora_entrega} - ${e.cliente}${conflictos.has(e.id_pedido) ? ' ⚠️' : ''}`).join(
+                        '\n') :
+                    '';
+
+                html += `
+                    <div class="${clases}"
+                         data-fecha="${fechaStr}"
+                         data-entregas='${JSON.stringify(entregasDia).replace(/'/g, "&#39;")}'
+                         title="${tituloTooltip.replace(/"/g, '&quot;')}"
+                         onmouseenter="mostrarTooltip(event, this)"
+                         onmouseleave="ocultarTooltip()"
+                         onclick="mostrarDetalleDia('${fechaStr}', this)">
+                        ${dia}
+                        ${tieneEntregas ? `<small style="font-size:0.6rem;">${entregasDia.length}📦</small>` : ''}
+                    </div>
+                `;
+            }
+
+            grid.innerHTML = html;
+        }
+
+        function cambiarMes(delta) {
+            calendarioMesActual += delta;
+            if (calendarioMesActual < 0) {
+                calendarioMesActual = 11;
+                calendarioAnioActual--;
+            } else if (calendarioMesActual > 11) {
+                calendarioMesActual = 0;
+                calendarioAnioActual++;
+            }
+            renderizarCalendario();
+        }
+
+        function mostrarTooltip(event, elemento) {
+            const tooltip = document.getElementById('tooltip-entrega');
+            const fechaStr = elemento.getAttribute('data-fecha');
+            let entregasData = [];
+            try {
+                entregasData = JSON.parse(elemento.getAttribute('data-entregas') || '[]');
+            } catch (e) {
+                entregasData = [];
+            }
+
+            if (entregasData.length === 0) {
+                ocultarTooltip();
+                return;
+            }
+
+            const conflictos = detectarConflictos();
+            let htmlTooltip = `<h4> ${formatearFecha(fechaStr)}</h4>`;
+            entregasData.forEach(e => {
+                const conflicto = conflictos.has(e.id_pedido) ? '  <span style="color:#D32F2F;">Conflicto</span>' :
+                    '';
+                htmlTooltip += `
+                    <div style="margin:4px 0;padding:4px 0;border-bottom:1px solid #eee;">
+                        <strong>${e.hora_entrega || '—'}</strong> - ${escaparHTML(e.cliente)}<br>
+                        <small>${escaparHTML(e.direccion)}</small>
+                        ${conflicto}
+                    </div>
+                `;
+            });
+
+            tooltip.innerHTML = htmlTooltip;
+            tooltip.classList.add('visible');
+
+            const rect = elemento.getBoundingClientRect();
+            let left = rect.right + 10;
+            let top = rect.top;
+
+            if (left + 290 > window.innerWidth) {
+                left = rect.left - 290;
+            }
+            if (top + 200 > window.innerHeight) {
+                top = window.innerHeight - 210;
+            }
+            if (top < 10) top = 10;
+
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+        }
+
+        function ocultarTooltip() {
+            clearTimeout(tooltipTimeout);
+            tooltipTimeout = setTimeout(() => {
+                document.getElementById('tooltip-entrega').classList.remove('visible');
+            }, 150);
+        }
+
+        function mostrarDetalleDia(fechaStr, elemento) {
+            const entregasDia = entregas.filter(e => e.fecha_entrega === fechaStr);
+            if (entregasDia.length === 0) {
+                mostrarNotificacion(' No hay entregas para esta fecha.', 'advertencia');
+                return;
+            }
+            const conflictos = detectarConflictos();
+            const detalles = entregasDia.map(e => {
+                const conflicto = conflictos.has(e.id_pedido) ? '  CONFLICTO' : '';
+                return `• ${e.hora_entrega} | ${e.cliente} | ${e.estado}${conflicto}`;
+            }).join('\n');
+            alert(` Entregas del ${formatearFecha(fechaStr)}:\n\n${detalles}`);
+        }
+
+        document.addEventListener('scroll', () => {
+            document.getElementById('tooltip-entrega').classList.remove('visible');
+        }, { passive: true });
+
+        function escaparHTML(str) {
+            if (!str) return '';
+            const mapa = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;',
+            };
+            return String(str).replace(/[&<>"']/g, c => mapa[c]);
+        }
+
+        setInterval(async () => {
+            await cargarEntregas();
+            renderizarCalendario();
+            actualizarContadorEntregasHoy();
+        }, 30000);
+
+        console.log(' Sistema de Gestión de Entregas inicializado.');
+        console.log(' Formulario listo para registrar pedidos.');
+        console.log(' Calendario interactivo cargado.');
+        console.log('  Detección de conflictos activa (ventana de ±1 hora).');
+        console.log(' Reemplaza GOOGLE_SCRIPT_URL con tu Web App de Google Apps Script.');
+    </script>
+</body>
+</html>
