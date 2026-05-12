@@ -65,10 +65,8 @@
         tbody td { padding: 11px 10px; border-bottom: 1px solid #f5e8de; }
         .conflicto-fila { background: #fff5f5 !important; border-left: 4px solid #D32F2F; }
         .estado-badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-weight: 700; font-size: 0.75rem; }
-        .estado-pendiente { background: #fff3e0; color: #e65100; }
-        .estado-en-ruta { background: #e3f2fd; color: #0d47a1; }
-        .estado-entregado { background: #e8f5e9; color: #1b5e20; }
-        .estado-cancelado { background: #fce4ec; color: #880e4f; }
+        .estado-anticipo { background: #fff3e0; color: #e65100; }
+        .estado-completo { background: #e8f5e9; color: #1b5e20; }
         .calendario-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
         .calendario-dia { aspect-ratio: 1; border-radius: 10px; padding: 5px; background: #fefaf7; border: 2px solid transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
         .calendario-dia.hoy { background: var(--vino); color: #fff; }
@@ -130,6 +128,7 @@
     </div>
 
     <script>
+        // ⚠️ Reemplaza con tu URL real de Google Apps Script
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz5Eio5yNdNAP_zZnhPCt-_g0F3xC-gaGw8k50Bqg9bAlBr8I7DJljrCBirUiue1LsuVg/exec';
 
         let entregas = [];
@@ -166,9 +165,21 @@
                 const resp = await fetch(GOOGLE_SCRIPT_URL + '?accion=obtener_entregas&t=' + Date.now(), { mode: 'cors' });
                 if (resp.ok) {
                     const data = await resp.json();
-                    entregas = Array.isArray(data) ? data : (data.entregas || []);
-                    estado.textContent = '(conectado a Sheets)';
-                    estado.style.color = '#4CAF50';
+                    const sheetData = Array.isArray(data) ? data : (data.entregas || []);
+                    
+                    // Si la hoja de cálculo tiene datos, se usan esos; si no, se conservan los locales (si existen)
+                    if (sheetData.length > 0) {
+                        entregas = sheetData;
+                        guardarLocalmente(); // sincronizar
+                        estado.textContent = '(conectado a Sheets)';
+                        estado.style.color = '#4CAF50';
+                    } else {
+                        // Sheets vacío – cargar desde localStorage para no perder los datos ya guardados
+                        const local = localStorage.getItem('entregas_data');
+                        entregas = local ? JSON.parse(local) : [];
+                        estado.textContent = '(Sheets vacío – usando datos locales)';
+                        estado.style.color = '#F9A825';
+                    }
                 } else {
                     throw new Error('Error');
                 }
@@ -194,15 +205,9 @@
             if (!validarDatos(datos, true)) { btn.disabled = false; return; }
 
             const enviado = await enviarASheets({ ...datos, accion: 'registrar_pedido' });
-            if (enviado) {
-                entregas.push(datos);
-                guardarLocalmente();
-                mostrarNotificacion(' Pedido registrado en Sheets.', 'exito');
-            } else {
-                entregas.push(datos);
-                guardarLocalmente();
-                mostrarNotificacion(' Sin conexión. Guardado localmente.', 'advertencia');
-            }
+            entregas.push(datos);
+            guardarLocalmente();
+            mostrarNotificacion(enviado ? '✅ Pedido registrado en Sheets.' : '⚠️ Sin conexión. Guardado localmente.', enviado ? 'exito' : 'advertencia');
             actualizarTodo();
             limpiarFormulario();
             btn.disabled = false;
@@ -214,23 +219,16 @@
             const datos = { ...obtenerDatosFormulario(), accion: 'actualizar_pedido', id_original: idOriginal };
             if (!validarDatos(datos, false)) { btn.disabled = false; return; }
             if (datos.id_pedido !== idOriginal && entregas.some(e => e.id_pedido === datos.id_pedido)) {
-                mostrarNotificacion(' El nuevo ID ya existe.', 'error');
+                mostrarNotificacion('❌ El nuevo ID ya existe.', 'error');
                 btn.disabled = false;
                 return;
             }
 
             const enviado = await enviarASheets(datos);
-            if (enviado) {
-                const index = entregas.findIndex(e => e.id_pedido === idOriginal);
-                if (index !== -1) entregas[index] = datos;
-                guardarLocalmente();
-                mostrarNotificacion('✅ Pedido actualizado en Sheets.', 'exito');
-            } else {
-                const index = entregas.findIndex(e => e.id_pedido === idOriginal);
-                if (index !== -1) entregas[index] = datos;
-                guardarLocalmente();
-                mostrarNotificacion('⚠️ Sin conexión. Actualizado localmente.', 'advertencia');
-            }
+            const index = entregas.findIndex(e => e.id_pedido === idOriginal);
+            if (index !== -1) entregas[index] = datos;
+            guardarLocalmente();
+            mostrarNotificacion(enviado ? '✅ Pedido actualizado en Sheets.' : '⚠️ Sin conexión. Actualizado localmente.', enviado ? 'exito' : 'advertencia');
             actualizarTodo();
             cancelarEdicion();
             btn.disabled = false;
@@ -239,15 +237,9 @@
         async function eliminarPedido(id) {
             if (!confirm(`¿Eliminar ${id}?`)) return;
             const enviado = await enviarASheets({ accion: 'eliminar_pedido', id_pedido: id });
-            if (enviado) {
-                entregas = entregas.filter(e => e.id_pedido !== id);
-                guardarLocalmente();
-                mostrarNotificacion('🗑️ Eliminado de Sheets.', 'exito');
-            } else {
-                entregas = entregas.filter(e => e.id_pedido !== id);
-                guardarLocalmente();
-                mostrarNotificacion('🗑️ Eliminado localmente (sin conexión).', 'advertencia');
-            }
+            entregas = entregas.filter(e => e.id_pedido !== id);
+            guardarLocalmente();
+            mostrarNotificacion(enviado ? '🗑️ Eliminado de Sheets.' : '🗑️ Eliminado localmente (sin conexión).', enviado ? 'exito' : 'advertencia');
             actualizarTodo();
             if (document.getElementById('editando-id').value === id) cancelarEdicion();
         }
@@ -282,7 +274,7 @@
 
         function validarDatos(d, esNuevo) {
             if (!d.id_pedido || !d.cliente || !d.direccion || !d.fecha_entrega || !d.hora_entrega || !d.telefono) {
-                mostrarNotificacion(' Completa todos los campos obligatorios.', 'advertencia');
+                mostrarNotificacion('⚠️ Completa todos los campos obligatorios.', 'advertencia');
                 return false;
             }
             if (esNuevo && entregas.some(e => e.id_pedido === d.id_pedido)) {
@@ -302,7 +294,7 @@
             document.getElementById('direccion').value = '';
             document.getElementById('telefono').value = '';
             document.getElementById('notas').value = '';
-            document.getElementById('estado').value = 'Pendiente';
+            document.getElementById('estado').value = 'Anticipo';  // valor existente
             document.getElementById('fecha_entrega').value = new Date().toISOString().split('T')[0];
             document.getElementById('hora_entrega').value = '';
         }
@@ -310,8 +302,8 @@
         function cancelarEdicion() {
             document.getElementById('editando-id').value = '';
             document.getElementById('id_pedido').removeAttribute('readonly');
-            document.getElementById('titulo-formulario').textContent = ' Registrar Nuevo Pedido';
-            document.getElementById('btn-enviar').innerHTML = ' Registrar Pedido';
+            document.getElementById('titulo-formulario').textContent = 'Registrar Nuevo Pedido';
+            document.getElementById('btn-enviar').innerHTML = 'Registrar Pedido';
             document.getElementById('btn-cancelar-edicion').style.display = 'none';
             limpiarFormulario();
         }
