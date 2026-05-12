@@ -156,7 +156,6 @@
     <header class="banner">
         <div class="banner-inner">
             <div class="banner-logo">
-                <div class="banner-icono">📦</div>
                 <div>
                     <h1>Gestión de Entregas</h1>
                     <p class="banner-subtitle">Sistema de registro y calendario</p>
@@ -170,9 +169,8 @@
     </header>
 
     <div class="contenedor-principal">
-        <!-- FORMULARIO -->
         <div class="tarjeta">
-            <h2><span>📝</span> <span id="titulo-formulario">Registrar Nuevo Pedido</span></h2>
+            <h2><span></span> <span id="titulo-formulario">Registrar Nuevo Pedido</span></h2>
             <form id="form-pedido" novalidate>
                 <input type="hidden" id="editando-id" value="">
                 <div class="form-grid">
@@ -182,34 +180,30 @@
                     <div class="campo-form"><label>Fecha Entrega *</label><input type="date" id="fecha_entrega" required></div>
                     <div class="campo-form"><label>Hora Entrega *</label><input type="time" id="hora_entrega" required></div>
                     <div class="campo-form">
-                        <label>Estado</label>
+                        <label>Pago</label>
                         <select id="estado">
-                            <option value="Pendiente">Pendiente</option>
-                            <option value="En Ruta">En Ruta</option>
-                            <option value="Entregado">Entregado</option>
-                            <option value="Cancelado">Cancelado</option>
+                            <option value="Complet">Completo</option>
+                            <option value="Adelanto">Adelanto</option>
                         </select>
                     </div>
                     <div class="campo-form"><label>Teléfono *</label><input type="tel" id="telefono" placeholder="+593 555 123 4567" required></div>
                     <div class="campo-form completo"><label>Notas</label><textarea id="notas" rows="2" placeholder="Instrucciones especiales..."></textarea></div>
-                    <button type="submit" class="btn-enviar" id="btn-enviar">🚀 Registrar Pedido</button>
-                    <button type="button" class="btn-enviar" id="btn-cancelar-edicion" style="display:none; background:#aaa;" onclick="cancelarEdicion()">❌ Cancelar Edición</button>
+                    <button type="submit" class="btn-enviar" id="btn-enviar"> Registrar Pedido</button>
+                    <button type="button" class="btn-enviar" id="btn-cancelar-edicion" style="display:none; background:#aaa;" onclick="cancelarEdicion()"> Cancelar Edición</button>
                 </div>
             </form>
             <div id="zona-notificacion"></div>
         </div>
 
-        <!-- CALENDARIO -->
         <div class="tarjeta">
-            <h2><span>📅</span> Calendario Entregas</h2>
+            <h2><span></span> Calendario Entregas</h2>
             <div class="calendario-grid" id="calendario-grid"></div>
             <div class="tooltip-entrega" id="tooltip-entrega"></div>
-            <p style="text-align:center;margin-top:12px;font-size:0.78rem;color:var(--gris);">🟡 Días con entregas &nbsp;|&nbsp; 🔴 Conflicto horario</p>
+            <p style="text-align:center;margin-top:12px;font-size:0.78rem;color:var(--gris);"> Días con entregas &nbsp;|&nbsp;  Conflicto horario</p>
         </div>
 
-        <!-- TABLA -->
         <div class="tarjeta" style="grid-column: 1 / -1;">
-            <h2><span>📋</span> Entregas Registradas</h2>
+            <h2><span></span> Entregas Registradas</h2>
             <div class="tabla-contenedor">
                 <table>
                     <thead><tr><th>ID</th><th>Cliente</th><th>Dirección</th><th>Fecha</th><th>Hora</th><th>Estado</th><th>Teléfono</th><th>Notas</th><th>⚡</th><th></th></tr></thead>
@@ -225,13 +219,11 @@
         let calendarioMesActual = new Date().getMonth();
         let calendarioAnioActual = new Date().getFullYear();
 
-        // ========== ELIMINACIÓN AUTOMÁTICA DE DATOS DEMO ==========
         function limpiarDatosDemoSiExisten() {
             const raw = localStorage.getItem('entregas_data');
             if (!raw) return;
             try {
                 const data = JSON.parse(raw);
-                // Firma de los datos demo: exactamente 3 pedidos con IDs PED-001, PED-002, PED-003
                 if (Array.isArray(data) && data.length === 3 &&
                     data[0].id_pedido === 'PED-001' &&
                     data[1].id_pedido === 'PED-002' &&
@@ -241,9 +233,8 @@
                 }
             } catch (e) {}
         }
-        limpiarDatosDemoSiExisten(); // Limpia al cargar la página
+        limpiarDatosDemoSiExisten();
 
-        // ========== INICIALIZACIÓN ==========
         document.addEventListener('DOMContentLoaded', () => {
             configurarFechaMinima();
             cargarEntregas();
@@ -270,7 +261,7 @@
             const datos = obtenerDatosFormulario();
             if (!validarDatos(datos)) { btn.disabled = false; return; }
             if (entregas.some(e => e.id_pedido === datos.id_pedido)) {
-                mostrarNotificacion('❌ ID duplicado.', 'error');
+                mostrarNotificacion(' ID duplicado.', 'error');
                 btn.disabled = false;
                 return;
             }
@@ -288,7 +279,7 @@
             const datos = { ...obtenerDatosFormulario(), accion: 'actualizar_pedido', id_original: idOriginal };
             if (!validarDatos(datos)) { btn.disabled = false; return; }
             if (datos.id_pedido !== idOriginal && entregas.some(e => e.id_pedido === datos.id_pedido)) {
-                mostrarNotificacion('❌ El nuevo ID ya existe.', 'error');
+                mostrarNotificacion(' El nuevo ID ya existe.', 'error');
                 btn.disabled = false;
                 return;
             }
@@ -335,8 +326,8 @@
         function cancelarEdicion() {
             document.getElementById('editando-id').value = '';
             document.getElementById('id_pedido').removeAttribute('readonly');
-            document.getElementById('titulo-formulario').textContent = '📝 Registrar Nuevo Pedido';
-            document.getElementById('btn-enviar').innerHTML = '🚀 Registrar Pedido';
+            document.getElementById('titulo-formulario').textContent = ' Registrar Nuevo Pedido';
+            document.getElementById('btn-enviar').innerHTML = ' Registrar Pedido';
             document.getElementById('btn-cancelar-edicion').style.display = 'none';
             limpiarFormulario();
         }
@@ -356,7 +347,7 @@
 
         function validarDatos(d) {
             if (!d.id_pedido || !d.cliente || !d.direccion || !d.fecha_entrega || !d.hora_entrega || !d.telefono) {
-                mostrarNotificacion('⚠️ Completa todos los campos obligatorios.', 'advertencia');
+                mostrarNotificacion(' Completa todos los campos obligatorios.', 'advertencia');
                 return false;
             }
             return true;
