@@ -981,20 +981,6 @@
             }
         }
 
-        function usarDatosDemo() {
-            const hoy = new Date().toISOString().split('T')[0];
-            const manana = new Date(Date.now() + 86400000).toISOString().split('T')[0];
-            entregas = [
-                { id_pedido: 'PED-001', cliente: 'María García', direccion: 'Av. Reforma 123, CDMX',
-                  fecha_entrega: hoy, hora_entrega: '10:00', estado: 'Pendiente', telefono: '5551234567', notas: 'Tocar timbre' },
-                { id_pedido: 'PED-002', cliente: 'Juan López', direccion: 'Calle Hidalgo 45, GDL',
-                  fecha_entrega: hoy, hora_entrega: '10:30', estado: 'En Ruta', telefono: '3339876543', notas: 'Dejar con portero' },
-                { id_pedido: 'PED-003', cliente: 'Ana Martínez', direccion: 'Blvd. Insurgentes 789, MTY',
-                  fecha_entrega: manana, hora_entrega: '14:00', estado: 'Pendiente', telefono: '8187654321', notas: '' },
-            ];
-            guardarLocalmente();
-        }
-
         async function cargarEntregas() {
             try {
                 const urlGet = GOOGLE_SCRIPT_URL + '?accion=obtener_entregas&t=' + Date.now();
