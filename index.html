@@ -594,6 +594,31 @@
             margin-bottom: 4px;
         }
 
+        /* Botones de acción en tabla */
+        .btn-accion {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: var(--transicion);
+            color: var(--vino);
+        }
+        .btn-accion:hover {
+            background: rgba(114, 47, 55, 0.1);
+        }
+        .btn-accion.editar:hover {
+            color: #0d47a1;
+        }
+        .btn-accion.eliminar:hover {
+            color: #D32F2F;
+        }
+        .acciones-col {
+            white-space: nowrap;
+            text-align: center;
+        }
+
         @media (max-width: 768px) {
             .banner-inner {
                 padding: 12px 16px;
@@ -625,7 +650,7 @@
     <header class="banner">
         <div class="banner-inner">
             <div class="banner-logo">
-                <div class="banner-icono"></div>
+                <div class="banner-icono">📦</div>
                 <div>
                     <h1>Gestión de Entregas</h1>
                     <p class="banner-subtitle">Sistema de registro y calendario</p>
@@ -637,10 +662,13 @@
             </div>
         </div>
     </header>
+
     <div class="contenedor-principal">
+        <!-- FORMULARIO -->
         <div class="tarjeta" id="tarjeta-formulario">
-            <h2><span class="emoji-titulo"></span> Registrar Nuevo Pedido</h2>
+            <h2><span class="emoji-titulo">📝</span> <span id="titulo-formulario">Registrar Nuevo Pedido</span></h2>
             <form id="form-pedido" novalidate>
+                <input type="hidden" id="editando-id" value="">
                 <div class="form-grid">
                     <div class="campo-form">
                         <label for="id_pedido">ID Pedido *</label>
@@ -652,7 +680,7 @@
                     </div>
                     <div class="campo-form completo">
                         <label for="direccion">Dirección *</label>
-                        <input type="text" id="direccion" name="direccion" placeholder="Calle, número, colonia, ciudad" required>
+                        <input type="text" id="direccion" name="direccion" placeholder="Calle, número, ciudad" required>
                     </div>
                     <div class="campo-form">
                         <label for="fecha_entrega">Fecha de Entrega *</label>
@@ -665,7 +693,10 @@
                     <div class="campo-form">
                         <label for="estado">Estado</label>
                         <select id="estado" name="estado">
-                            <option value="Pagado">Pagado</option>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="En Ruta">En Ruta</option>
+                            <option value="Entregado">Entregado</option>
+                            <option value="Cancelado">Cancelado</option>
                         </select>
                     </div>
                     <div class="campo-form">
@@ -678,47 +709,42 @@
                     </div>
                     <button type="submit" class="btn-enviar" id="btn-enviar">
                         <span class="spinner"></span>
-                        <span class="texto-btn"> Registrar Pedido</span>
+                        <span class="texto-btn">🚀 Registrar Pedido</span>
+                    </button>
+                    <button type="button" class="btn-enviar" id="btn-cancelar-edicion" style="display:none; background: #aaa; margin-top: 0;"
+                        onclick="cancelarEdicion()">
+                        ❌ Cancelar Edición
                     </button>
                 </div>
             </form>
             <div id="zona-notificacion"></div>
         </div>
+
+        <!-- CALENDARIO -->
         <div class="tarjeta" id="tarjeta-calendario">
-            <h2><span class="emoji-titulo"></span> Calendario Interactivo</h2>
-            <div class="calendario-grid" id="calendario-grid">
-            </div>
+            <h2><span class="emoji-titulo">📅</span> Calendario Entregas</h2>
+            <div class="calendario-grid" id="calendario-grid"></div>
             <div class="tooltip-entrega" id="tooltip-entrega"></div>
             <p style="text-align:center;margin-top:12px;font-size:0.78rem;color:var(--gris);">
-                 Días con entregas &nbsp;|&nbsp;  Días con conflicto de horario
+                🟡 Días con entregas &nbsp;|&nbsp; 🔴 Días con conflicto de horario
             </p>
         </div>
 
-        <div class="tarjeta" style="grid-column: 1 / -1;" id="tarjeta-tabla">
-            <h2><span class="emoji-titulo"></span> Entregas Registradas &nbsp;
+        <!-- TABLA -->
+        <div class="tarjeta" style="grid-column: 1 / -1;">
+            <h2><span class="emoji-titulo">📋</span> Entregas Registradas
                 <span style="font-size:0.75rem;font-weight:400;color:var(--gris);">(Datos sincronizados con Google Sheets)</span>
             </h2>
             <div class="tabla-contenedor">
                 <table>
                     <thead>
                         <tr>
-                            <th>ID Pedido</th>
-                            <th>Cliente</th>
-                            <th>Dirección</th>
-                            <th>Fecha</th>
-                            <th>Hora</th>
-                            <th>Estado</th>
-                            <th>Teléfono</th>
-                            <th>Notas</th>
-                            <th></th>
+                            <th>ID Pedido</th><th>Cliente</th><th>Dirección</th><th>Fecha</th><th>Hora</th>
+                            <th>Estado</th><th>Teléfono</th><th>Notas</th><th>⚡</th><th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="tabla-entregas-body">
-                        <tr>
-                            <td colspan="9" style="text-align:center;padding:30px;color:var(--gris);">
-                                Cargando datos desde Google Sheets...
-                            </td>
-                        </tr>
+                        <tr><td colspan="10" style="text-align:center;padding:30px;color:var(--gris);">Cargando datos...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -726,7 +752,7 @@
     </div>
 
     <script>
-        const GOOGLE_SCRIPT_URL ='https://script.google.com/macros/s/AKfycbzevMAMfxhtEUe75N3TMgTVGPLDAGcSmXwhaURCQmFXezGM9m0RveF_AGgiM9Z5rd0fWg/exec';
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzevMAMfxhtEUe75N3TMgTVGPLDAGcSmXwhaURCQmFXezGM9m0RveF_AGgiM9Z5rd0fWg/exec';
         let entregas = [];
         let calendarioMesActual = new Date().getMonth();
         let calendarioAnioActual = new Date().getFullYear();
@@ -751,7 +777,12 @@
             const form = document.getElementById('form-pedido');
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                await enviarPedido();
+                const editandoId = document.getElementById('editando-id').value;
+                if (editandoId) {
+                    await actualizarPedido(editandoId);
+                } else {
+                    await enviarPedido();
+                }
             });
         }
 
@@ -777,139 +808,225 @@
 
             if (!formData.id_pedido || !formData.cliente || !formData.direccion ||
                 !formData.fecha_entrega || !formData.hora_entrega || !formData.telefono) {
-                mostrarNotificacion(' Por favor completa todos los campos obligatorios (*).', 'advertencia');
+                mostrarNotificacion('⚠️ Por favor completa todos los campos obligatorios (*).', 'advertencia');
                 btn.classList.remove('cargando');
                 btn.disabled = false;
                 return;
             }
 
-            const fechaSeleccionada = new Date(formData.fecha_entrega + 'T' + formData.hora_entrega);
-            const ahora = new Date();
-            if (fechaSeleccionada < ahora && formData.fecha_entrega < new Date().toISOString().split('T')[0]) {
-                mostrarNotificacion(' La fecha de entrega no puede ser anterior a hoy.', 'advertencia');
+            // Verificar ID duplicado
+            if (entregas.some(e => e.id_pedido === formData.id_pedido)) {
+                mostrarNotificacion('❌ Ya existe un pedido con ese ID. Usa otro identificador.', 'error');
                 btn.classList.remove('cargando');
                 btn.disabled = false;
                 return;
             }
 
             try {
-                const respuesta = await fetch(GOOGLE_SCRIPT_URL, {
+                await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: new URLSearchParams(formData).toString(),
                 });
-
-                mostrarNotificacion(' Pedido enviado correctamente. Verificando conflictos...', 'exito');
-
+                mostrarNotificacion('✅ Pedido enviado correctamente.', 'exito');
                 setTimeout(async () => {
                     await cargarEntregas();
                     renderizarCalendario();
                     actualizarContadorEntregasHoy();
                     limpiarFormulario();
-                    verificarConflictosLocales(formData);
                 }, 1500);
-
             } catch (error) {
                 console.error('Error al enviar:', error);
-                mostrarNotificacion(' Error de conexión. Verifica la URL de Google Apps Script o tu conexión.', 'error');
+                // Guardado local de respaldo
+                entregas.push(formData);
+                guardarLocalmente();
+                actualizarTablaEntregas();
+                actualizarContadorEntregasHoy();
+                renderizarCalendario();
+                limpiarFormulario();
+                mostrarNotificacion('⚠️ Sin conexión. Pedido guardado localmente.', 'advertencia');
             } finally {
                 btn.classList.remove('cargando');
                 btn.disabled = false;
             }
         }
 
-        function verificarConflictosLocales(nuevoPedido) {
-            const mismaFecha = entregas.filter(e =>
-                e.fecha_entrega === nuevoPedido.fecha_entrega &&
-                e.id_pedido !== nuevoPedido.id_pedido
-            );
+        async function actualizarPedido(idOriginal) {
+            const btn = document.getElementById('btn-enviar');
+            const zonaNotif = document.getElementById('zona-notificacion');
+            btn.classList.add('cargando');
+            btn.disabled = true;
+            zonaNotif.innerHTML = '';
 
-            if (mismaFecha.length > 0) {
-                const horaNueva = convertirHoraAMinutos(nuevoPedido.hora_entrega);
-                let hayConflicto = false;
-                const ventanaConflicto = 60;
+            const formData = {
+                id_pedido: document.getElementById('id_pedido').value.trim(),
+                cliente: document.getElementById('cliente').value.trim(),
+                direccion: document.getElementById('direccion').value.trim(),
+                fecha_entrega: document.getElementById('fecha_entrega').value,
+                hora_entrega: document.getElementById('hora_entrega').value,
+                estado: document.getElementById('estado').value,
+                telefono: document.getElementById('telefono').value.trim(),
+                notas: document.getElementById('notas').value.trim(),
+                accion: 'actualizar_pedido',
+                id_original: idOriginal,
+                timestamp: new Date().toISOString(),
+            };
 
-                for (const existente of mismaFecha) {
-                    const horaExistente = convertirHoraAMinutos(existente.hora_entrega);
-                    const diferencia = Math.abs(horaNueva - horaExistente);
-                    if (diferencia <= ventanaConflicto) {
-                        hayConflicto = true;
-                        break;
-                    }
+            if (!formData.id_pedido || !formData.cliente || !formData.direccion ||
+                !formData.fecha_entrega || !formData.hora_entrega || !formData.telefono) {
+                mostrarNotificacion('⚠️ Completa todos los campos obligatorios.', 'advertencia');
+                btn.classList.remove('cargando');
+                btn.disabled = false;
+                return;
+            }
+
+            // Si cambió el ID, verificar que no exista ya (excepto el original)
+            if (formData.id_pedido !== idOriginal && entregas.some(e => e.id_pedido === formData.id_pedido)) {
+                mostrarNotificacion('❌ Ya existe otro pedido con ese ID.', 'error');
+                btn.classList.remove('cargando');
+                btn.disabled = false;
+                return;
+            }
+
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams(formData).toString(),
+                });
+                mostrarNotificacion('✅ Pedido actualizado correctamente.', 'exito');
+                setTimeout(async () => {
+                    await cargarEntregas();
+                    renderizarCalendario();
+                    actualizarContadorEntregasHoy();
+                    cancelarEdicion();
+                }, 1500);
+            } catch (error) {
+                // Actualización local
+                const index = entregas.findIndex(e => e.id_pedido === idOriginal);
+                if (index !== -1) {
+                    entregas[index] = { ...formData };
+                    guardarLocalmente();
+                    actualizarTablaEntregas();
+                    actualizarContadorEntregasHoy();
+                    renderizarCalendario();
+                    cancelarEdicion();
+                    mostrarNotificacion('✅ Pedido actualizado localmente.', 'exito');
                 }
+            } finally {
+                btn.classList.remove('cargando');
+                btn.disabled = false;
+            }
+        }
 
-                if (hayConflicto) {
-                    mostrarNotificacion(
-                        ' <strong>¡INTERFERENCIA DETECTADA!</strong> Ya existe una entrega en la misma fecha con horario cercano (±1 hora). Revisa el calendario.',
-                        'advertencia'
-                    );
+        function editarPedido(idPedido) {
+            const pedido = entregas.find(e => e.id_pedido === idPedido);
+            if (!pedido) return;
+            document.getElementById('editando-id').value = idPedido;
+            document.getElementById('id_pedido').value = pedido.id_pedido;
+            document.getElementById('cliente').value = pedido.cliente;
+            document.getElementById('direccion').value = pedido.direccion;
+            document.getElementById('fecha_entrega').value = pedido.fecha_entrega;
+            document.getElementById('hora_entrega').value = pedido.hora_entrega;
+            document.getElementById('estado').value = pedido.estado;
+            document.getElementById('telefono').value = pedido.telefono;
+            document.getElementById('notas').value = pedido.notas || '';
+            document.getElementById('id_pedido').setAttribute('readonly', true);
+            document.getElementById('titulo-formulario').textContent = '✏️ Editar Pedido';
+            document.querySelector('#btn-enviar .texto-btn').textContent = '💾 Actualizar Pedido';
+            document.getElementById('btn-cancelar-edicion').style.display = 'block';
+            window.scrollTo({ top: document.getElementById('tarjeta-formulario').offsetTop - 100, behavior: 'smooth' });
+        }
+
+        async function eliminarPedido(idPedido) {
+            if (!confirm(`¿Eliminar definitivamente el pedido ${idPedido}?`)) return;
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ accion: 'eliminar_pedido', id_pedido: idPedido }).toString(),
+                });
+                mostrarNotificacion('🗑️ Pedido eliminado.', 'exito');
+                setTimeout(async () => {
+                    await cargarEntregas();
+                    renderizarCalendario();
+                    actualizarContadorEntregasHoy();
+                }, 1000);
+            } catch (error) {
+                // Eliminación local
+                entregas = entregas.filter(e => e.id_pedido !== idPedido);
+                guardarLocalmente();
+                actualizarTablaEntregas();
+                actualizarContadorEntregasHoy();
+                renderizarCalendario();
+                mostrarNotificacion('🗑️ Pedido eliminado localmente.', 'exito');
+            }
+            // Si estábamos editando ese pedido, cancelar edición
+            if (document.getElementById('editando-id').value === idPedido) {
+                cancelarEdicion();
+            }
+        }
+
+        function cancelarEdicion() {
+            document.getElementById('editando-id').value = '';
+            document.getElementById('id_pedido').removeAttribute('readonly');
+            document.getElementById('titulo-formulario').textContent = '📝 Registrar Nuevo Pedido';
+            document.querySelector('#btn-enviar .texto-btn').textContent = '🚀 Registrar Pedido';
+            document.getElementById('btn-cancelar-edicion').style.display = 'none';
+            limpiarFormulario();
+        }
+
+        function guardarLocalmente() {
+            localStorage.setItem('entregas_data', JSON.stringify(entregas));
+        }
+
+        function cargarLocalmente() {
+            const data = localStorage.getItem('entregas_data');
+            if (data) {
+                try {
+                    entregas = JSON.parse(data);
+                } catch (e) {
+                    entregas = [];
                 }
             }
         }
 
-        function convertirHoraAMinutos(horaStr) {
-            if (!horaStr) return 0;
-            const partes = horaStr.split(':');
-            return parseInt(partes[0]) * 60 + parseInt(partes[1]);
-        }
-
-        function limpiarFormulario() {
-            document.getElementById('id_pedido').value = '';
-            document.getElementById('cliente').value = '';
-            document.getElementById('direccion').value = '';
-            document.getElementById('telefono').value = '';
-            document.getElementById('notas').value = '';
-            document.getElementById('estado').value = 'Pendiente';
-            configurarFechaMinima();
-            document.getElementById('hora_entrega').value = '';
-            document.getElementById('id_pedido').focus();
-        }
-
-        function mostrarNotificacion(mensaje, tipo) {
-            const zona = document.getElementById('zona-notificacion');
-            const iconos = { exito: '', error: '', advertencia: '' };
-            zona.innerHTML = `
-                <div class="notificacion ${tipo}">
-                    <span class="icono-notif">${iconos[tipo] || ''}</span>
-                    <span>${mensaje}</span>
-                </div>
-            `;
-
-            setTimeout(() => {
-                if (zona.querySelector('.notificacion')) {
-                    zona.querySelector('.notificacion').style.opacity = '0';
-                    zona.querySelector('.notificacion').style.transition = 'opacity 0.5s';
-                    setTimeout(() => { zona.innerHTML = ''; }, 500);
-                }
-            }, 6000);
+        function usarDatosDemo() {
+            const hoy = new Date().toISOString().split('T')[0];
+            const manana = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+            entregas = [
+                { id_pedido: 'PED-001', cliente: 'María García', direccion: 'Av. Reforma 123, CDMX',
+                  fecha_entrega: hoy, hora_entrega: '10:00', estado: 'Pendiente', telefono: '5551234567', notas: 'Tocar timbre' },
+                { id_pedido: 'PED-002', cliente: 'Juan López', direccion: 'Calle Hidalgo 45, GDL',
+                  fecha_entrega: hoy, hora_entrega: '10:30', estado: 'En Ruta', telefono: '3339876543', notas: 'Dejar con portero' },
+                { id_pedido: 'PED-003', cliente: 'Ana Martínez', direccion: 'Blvd. Insurgentes 789, MTY',
+                  fecha_entrega: manana, hora_entrega: '14:00', estado: 'Pendiente', telefono: '8187654321', notas: '' },
+            ];
+            guardarLocalmente();
         }
 
         async function cargarEntregas() {
             try {
                 const urlGet = GOOGLE_SCRIPT_URL + '?accion=obtener_entregas&t=' + Date.now();
-                const respuesta = await fetch(urlGet, {
-                    method: 'GET',
-                    mode: 'cors',
-                    headers: { 'Accept': 'application/json' },
-                });
-
+                const respuesta = await fetch(urlGet, { method: 'GET', mode: 'cors', headers: { 'Accept': 'application/json' } });
                 if (respuesta.ok) {
                     const data = await respuesta.json();
                     if (data && Array.isArray(data)) {
                         entregas = data;
-                    } else if (data && data.entregas && Array.isArray(data.entregas)) {
+                    } else if (data && data.entregas) {
                         entregas = data.entregas;
                     }
                 } else {
-                    console.warn('Respuesta no OK, usando datos de muestra para demo');
-                    usarDatosDemo();
+                    cargarLocalmente();
+                    if (entregas.length === 0) usarDatosDemo();
                 }
             } catch (error) {
-                console.warn('No se pudo conectar con Google Sheets. Usando datos de demostración.', error);
-                usarDatosDemo();
+                console.warn('Usando datos locales (sin conexión).');
+                cargarLocalmente();
+                if (entregas.length === 0) usarDatosDemo();
             }
             actualizarTablaEntregas();
             actualizarContadorEntregasHoy();
@@ -919,38 +1036,35 @@
         function actualizarTablaEntregas() {
             const tbody = document.getElementById('tabla-entregas-body');
             if (entregas.length === 0) {
-                tbody.innerHTML =
-                    '<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--gris);">No hay entregas registradas aún.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:30px;">No hay entregas registradas.</td></tr>';
                 return;
             }
-
             const conflictos = detectarConflictos();
-
-            const entregasOrdenadas = [...entregas].sort((a, b) => {
-                const fechaA = new Date(a.fecha_entrega + 'T' + (a.hora_entrega || '00:00'));
-                const fechaB = new Date(b.fecha_entrega + 'T' + (b.hora_entrega || '00:00'));
-                return fechaA - fechaB;
+            const ordenadas = [...entregas].sort((a, b) => {
+                const fa = new Date(a.fecha_entrega + 'T' + (a.hora_entrega || '00:00'));
+                const fb = new Date(b.fecha_entrega + 'T' + (b.hora_entrega || '00:00'));
+                return fa - fb;
             });
-
-            tbody.innerHTML = entregasOrdenadas.map(entrega => {
-                const tieneConflicto = conflictos.has(entrega.id_pedido);
-                const claseFila = tieneConflicto ? 'conflicto-fila' : '';
-                const claseEstado = obtenerClaseEstado(entrega.estado);
-                const iconoConflicto = tieneConflicto ?
-                    '<span class="conflicto-icono" title="Conflicto de horario detectado"></span>' :
-                    '<span style="color:#4CAF50;" title="Sin conflictos">✓</span>';
-
+            tbody.innerHTML = ordenadas.map(entrega => {
+                const conflicto = conflictos.has(entrega.id_pedido);
+                const filaClase = conflicto ? 'conflicto-fila' : '';
+                const icono = conflicto ? '<span class="conflicto-icono" title="Conflicto horario">⚠️</span>' :
+                                           '<span style="color:#4CAF50;">✓</span>';
                 return `
-                    <tr class="${claseFila}">
+                    <tr class="${filaClase}">
                         <td><strong>${escaparHTML(entrega.id_pedido)}</strong></td>
                         <td>${escaparHTML(entrega.cliente)}</td>
                         <td>${escaparHTML(entrega.direccion)}</td>
                         <td>${formatearFecha(entrega.fecha_entrega)}</td>
                         <td>${entrega.hora_entrega || '—'}</td>
-                        <td><span class="estado-badge ${claseEstado}">${escaparHTML(entrega.estado)}</span></td>
+                        <td><span class="estado-badge ${obtenerClaseEstado(entrega.estado)}">${escaparHTML(entrega.estado)}</span></td>
                         <td>${escaparHTML(entrega.telefono)}</td>
                         <td>${escaparHTML(entrega.notas || '—')}</td>
-                        <td>${iconoConflicto}</td>
+                        <td>${icono}</td>
+                        <td class="acciones-col">
+                            <button class="btn-accion editar" title="Editar" onclick="editarPedido('${entrega.id_pedido.replace(/'/g, "\\'")}')">✏️</button>
+                            <button class="btn-accion eliminar" title="Eliminar" onclick="eliminarPedido('${entrega.id_pedido.replace(/'/g, "\\'")}')">🗑️</button>
+                        </td>
                     </tr>
                 `;
             }).join('');
@@ -959,22 +1073,20 @@
         function detectarConflictos() {
             const conflictosSet = new Set();
             const ventanaMinutos = 60;
-
             const porFecha = {};
             entregas.forEach(e => {
                 if (!porFecha[e.fecha_entrega]) porFecha[e.fecha_entrega] = [];
                 porFecha[e.fecha_entrega].push(e);
             });
-
             for (const fecha in porFecha) {
-                const entregasDelDia = porFecha[fecha];
-                for (let i = 0; i < entregasDelDia.length; i++) {
-                    for (let j = i + 1; j < entregasDelDia.length; j++) {
-                        const h1 = convertirHoraAMinutos(entregasDelDia[i].hora_entrega);
-                        const h2 = convertirHoraAMinutos(entregasDelDia[j].hora_entrega);
+                const lista = porFecha[fecha];
+                for (let i = 0; i < lista.length; i++) {
+                    for (let j = i + 1; j < lista.length; j++) {
+                        const h1 = convertirHoraAMinutos(lista[i].hora_entrega);
+                        const h2 = convertirHoraAMinutos(lista[j].hora_entrega);
                         if (Math.abs(h1 - h2) <= ventanaMinutos) {
-                            conflictosSet.add(entregasDelDia[i].id_pedido);
-                            conflictosSet.add(entregasDelDia[j].id_pedido);
+                            conflictosSet.add(lista[i].id_pedido);
+                            conflictosSet.add(lista[j].id_pedido);
                         }
                     }
                 }
@@ -997,12 +1109,16 @@
             try {
                 const fecha = new Date(fechaStr + 'T00:00:00');
                 return fecha.toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' });
-            } catch {
-                return fechaStr;
-            }
+            } catch { return fechaStr; }
         }
 
-        function escaparingHTML(str) {
+        function convertirHoraAMinutos(horaStr) {
+            if (!horaStr) return 0;
+            const partes = horaStr.split(':');
+            return parseInt(partes[0]) * 60 + parseInt(partes[1]);
+        }
+
+        function escaparHTML(str) {
             const div = document.createElement('div');
             div.textContent = str;
             return div.innerHTML;
@@ -1011,200 +1127,158 @@
         function actualizarContadorEntregasHoy() {
             const hoy = new Date().toISOString().split('T')[0];
             const entregasHoy = entregas.filter(e => e.fecha_entrega === hoy).length;
-            document.getElementById('contador-entregas').textContent =
-                `${entregasHoy} entrega${entregasHoy !== 1 ? 's' : ''} hoy`;
+            document.getElementById('contador-entregas').textContent = `${entregasHoy} entrega${entregasHoy !== 1 ? 's' : ''} hoy`;
         }
 
+        function limpiarFormulario() {
+            document.getElementById('id_pedido').value = '';
+            document.getElementById('cliente').value = '';
+            document.getElementById('direccion').value = '';
+            document.getElementById('telefono').value = '';
+            document.getElementById('notas').value = '';
+            document.getElementById('estado').value = 'Pendiente';
+            configurarFechaMinima();
+            document.getElementById('hora_entrega').value = '';
+            document.getElementById('id_pedido').focus();
+        }
+
+        function mostrarNotificacion(mensaje, tipo) {
+            const zona = document.getElementById('zona-notificacion');
+            const iconos = { exito: '✅', error: '❌', advertencia: '⚠️' };
+            zona.innerHTML = `
+                <div class="notificacion ${tipo}">
+                    <span class="icono-notif">${iconos[tipo] || 'ℹ️'}</span>
+                    <span>${mensaje}</span>
+                </div>
+            `;
+            setTimeout(() => {
+                const notif = zona.querySelector('.notificacion');
+                if (notif) {
+                    notif.style.opacity = '0';
+                    notif.style.transition = 'opacity 0.5s';
+                    setTimeout(() => { zona.innerHTML = ''; }, 500);
+                }
+            }, 6000);
+        }
+
+        // ========== CALENDARIO ==========
         function renderizarCalendario() {
             const grid = document.getElementById('calendario-grid');
             const anio = calendarioAnioActual;
             const mes = calendarioMesActual;
-
-            const mesesNombres = [
-                'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-            ];
-            const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-
+            const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+            const diasSemana = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
             const primerDia = new Date(anio, mes, 1);
             const ultimoDia = new Date(anio, mes + 1, 0);
             const diasEnMes = ultimoDia.getDate();
-            const diaInicioSemana = primerDia.getDay();
-
-            const hoy = new Date();
-            const hoyStr = hoy.toISOString().split('T')[0];
-
-            const entregasPorFecha = {};
+            const diaInicio = primerDia.getDay();
+            const hoyStr = new Date().toISOString().split('T')[0];
             const conflictos = detectarConflictos();
+
+            const porFecha = {};
             entregas.forEach(e => {
-                if (!entregasPorFecha[e.fecha_entrega]) entregasPorFecha[e.fecha_entrega] = [];
-                entregasPorFecha[e.fecha_entrega].push(e);
+                if (!porFecha[e.fecha_entrega]) porFecha[e.fecha_entrega] = [];
+                porFecha[e.fecha_entrega].push(e);
             });
 
-            let html = '';
-
-            html += `
+            let html = `
                 <div class="calendario-mes-header">
-                    <button onclick="cambiarMes(-1)" title="Mes anterior">◀</button>
-                    <span>${mesesNombres[mes]} ${anio}</span>
-                    <button onclick="cambiarMes(1)" title="Mes siguiente">▶</button>
+                    <button onclick="cambiarMes(-1)">◀</button>
+                    <span>${meses[mes]} ${anio}</span>
+                    <button onclick="cambiarMes(1)">▶</button>
                 </div>
             `;
-
-            diasSemana.forEach(dia => {
-                html += `<div class="calendario-dia-header">${dia}</div>`;
-            });
-
-            for (let i = 0; i < diaInicioSemana; i++) {
-                html += '<div class="calendario-dia vacio"></div>';
-            }
+            diasSemana.forEach(d => html += `<div class="calendario-dia-header">${d}</div>`);
+            for (let i = 0; i < diaInicio; i++) html += '<div class="calendario-dia vacio"></div>';
 
             for (let dia = 1; dia <= diasEnMes; dia++) {
-                const fechaStr = `${anio}-${String(mes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
-                const esHoy = fechaStr === hoyStr;
-                const entregasDia = entregasPorFecha[fechaStr] || [];
+                const fecha = `${anio}-${String(mes+1).padStart(2,'0')}-${String(dia).padStart(2,'0')}`;
+                const esHoy = fecha === hoyStr;
+                const entregasDia = porFecha[fecha] || [];
                 const tieneEntregas = entregasDia.length > 0;
+                const tieneConflicto = tieneEntregas && entregasDia.some(e => conflictos.has(e.id_pedido));
 
-                let tieneConflictoDia = false;
-                if (tieneEntregas) {
-                    tieneConflictoDia = entregasDia.some(e => conflictos.has(e.id_pedido));
-                }
-
-                let clases = 'calendario-dia';
-                if (esHoy) clases += ' hoy';
-                if (tieneConflictoDia) clases += ' con-conflicto';
-                else if (tieneEntregas) clases += ' con-entregas';
-
-                const tituloTooltip = tieneEntregas ?
-                    entregasDia.map(e => `${e.hora_entrega} - ${e.cliente}${conflictos.has(e.id_pedido) ? ' ⚠️' : ''}`).join(
-                        '\n') :
-                    '';
+                let clase = 'calendario-dia';
+                if (esHoy) clase += ' hoy';
+                if (tieneConflicto) clase += ' con-conflicto';
+                else if (tieneEntregas) clase += ' con-entregas';
 
                 html += `
-                    <div class="${clases}"
-                         data-fecha="${fechaStr}"
-                         data-entregas='${JSON.stringify(entregasDia).replace(/'/g, "&#39;")}'
-                         title="${tituloTooltip.replace(/"/g, '&quot;')}"
+                    <div class="${clase}" data-fecha="${fecha}"
                          onmouseenter="mostrarTooltip(event, this)"
                          onmouseleave="ocultarTooltip()"
-                         onclick="mostrarDetalleDia('${fechaStr}', this)">
+                         onclick="mostrarDetalleDia('${fecha}')">
                         ${dia}
                         ${tieneEntregas ? `<small style="font-size:0.6rem;">${entregasDia.length}📦</small>` : ''}
                     </div>
                 `;
             }
-
             grid.innerHTML = html;
         }
 
-        function cambiarMes(delta) {
+        window.cambiarMes = function(delta) {
             calendarioMesActual += delta;
-            if (calendarioMesActual < 0) {
-                calendarioMesActual = 11;
-                calendarioAnioActual--;
-            } else if (calendarioMesActual > 11) {
-                calendarioMesActual = 0;
-                calendarioAnioActual++;
-            }
+            if (calendarioMesActual < 0) { calendarioMesActual = 11; calendarioAnioActual--; }
+            else if (calendarioMesActual > 11) { calendarioMesActual = 0; calendarioAnioActual++; }
             renderizarCalendario();
-        }
+        };
 
-        function mostrarTooltip(event, elemento) {
+        window.mostrarTooltip = function(event, el) {
             const tooltip = document.getElementById('tooltip-entrega');
-            const fechaStr = elemento.getAttribute('data-fecha');
-            let entregasData = [];
-            try {
-                entregasData = JSON.parse(elemento.getAttribute('data-entregas') || '[]');
-            } catch (e) {
-                entregasData = [];
-            }
-
-            if (entregasData.length === 0) {
-                ocultarTooltip();
-                return;
-            }
-
+            const fecha = el.getAttribute('data-fecha');
+            const entregasDia = entregas.filter(e => e.fecha_entrega === fecha);
+            if (!entregasDia.length) return;
             const conflictos = detectarConflictos();
-            let htmlTooltip = `<h4> ${formatearFecha(fechaStr)}</h4>`;
-            entregasData.forEach(e => {
-                const conflicto = conflictos.has(e.id_pedido) ? '  <span style="color:#D32F2F;">Conflicto</span>' :
-                    '';
-                htmlTooltip += `
+            let html = `<h4>📅 ${formatearFecha(fecha)}</h4>`;
+            entregasDia.forEach(e => {
+                const conflicto = conflictos.has(e.id_pedido) ? ' ⚠️ <span style="color:#D32F2F;">Conflicto</span>' : '';
+                html += `
                     <div style="margin:4px 0;padding:4px 0;border-bottom:1px solid #eee;">
-                        <strong>${e.hora_entrega || '—'}</strong> - ${escaparHTML(e.cliente)}<br>
+                        <strong>${e.hora_entrega||'—'}</strong> - ${escaparHTML(e.cliente)}<br>
                         <small>${escaparHTML(e.direccion)}</small>
                         ${conflicto}
                     </div>
                 `;
             });
-
-            tooltip.innerHTML = htmlTooltip;
+            tooltip.innerHTML = html;
             tooltip.classList.add('visible');
-
-            const rect = elemento.getBoundingClientRect();
+            const rect = el.getBoundingClientRect();
             let left = rect.right + 10;
             let top = rect.top;
-
-            if (left + 290 > window.innerWidth) {
-                left = rect.left - 290;
-            }
-            if (top + 200 > window.innerHeight) {
-                top = window.innerHeight - 210;
-            }
+            if (left + 290 > window.innerWidth) left = rect.left - 290;
+            if (top + 200 > window.innerHeight) top = window.innerHeight - 210;
             if (top < 10) top = 10;
-
             tooltip.style.left = left + 'px';
             tooltip.style.top = top + 'px';
-        }
+        };
 
-        function ocultarTooltip() {
+        window.ocultarTooltip = function() {
             clearTimeout(tooltipTimeout);
-            tooltipTimeout = setTimeout(() => {
-                document.getElementById('tooltip-entrega').classList.remove('visible');
-            }, 150);
-        }
+            tooltipTimeout = setTimeout(() => document.getElementById('tooltip-entrega').classList.remove('visible'), 150);
+        };
 
-        function mostrarDetalleDia(fechaStr, elemento) {
-            const entregasDia = entregas.filter(e => e.fecha_entrega === fechaStr);
-            if (entregasDia.length === 0) {
-                mostrarNotificacion(' No hay entregas para esta fecha.', 'advertencia');
+        window.mostrarDetalleDia = function(fecha) {
+            const entregasDia = entregas.filter(e => e.fecha_entrega === fecha);
+            if (!entregasDia.length) {
+                mostrarNotificacion('📭 No hay entregas para esta fecha.', 'advertencia');
                 return;
             }
             const conflictos = detectarConflictos();
             const detalles = entregasDia.map(e => {
-                const conflicto = conflictos.has(e.id_pedido) ? '  CONFLICTO' : '';
-                return `• ${e.hora_entrega} | ${e.cliente} | ${e.estado}${conflicto}`;
+                const c = conflictos.has(e.id_pedido) ? ' ⚠️ CONFLICTO' : '';
+                return `• ${e.hora_entrega} | ${e.cliente} | ${e.estado}${c}`;
             }).join('\n');
-            alert(` Entregas del ${formatearFecha(fechaStr)}:\n\n${detalles}`);
-        }
+            alert(`📅 Entregas del ${formatearFecha(fecha)}:\n\n${detalles}`);
+        };
 
-        document.addEventListener('scroll', () => {
-            document.getElementById('tooltip-entrega').classList.remove('visible');
-        }, { passive: true });
+        document.addEventListener('scroll', () => document.getElementById('tooltip-entrega').classList.remove('visible'), { passive: true });
 
-        function escaparHTML(str) {
-            if (!str) return '';
-            const mapa = {
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#39;',
-            };
-            return String(str).replace(/[&<>"']/g, c => mapa[c]);
-        }
-
+        // Actualización periódica
         setInterval(async () => {
             await cargarEntregas();
             renderizarCalendario();
             actualizarContadorEntregasHoy();
         }, 30000);
-
-        console.log(' Sistema de Gestión de Entregas inicializado.');
-        console.log(' Formulario listo para registrar pedidos.');
-        console.log(' Calendario interactivo cargado.');
-        console.log('  Detección de conflictos activa (ventana de ±1 hora).');
-        console.log(' Reemplaza GOOGLE_SCRIPT_URL con tu Web App de Google Apps Script.');
     </script>
 </body>
 </html>
