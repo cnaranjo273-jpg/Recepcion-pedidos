@@ -17,7 +17,6 @@
             --gris: #6B5B5B;
             --sombra: 0 8px 32px rgba(114, 47, 55, 0.12);
             --borde-radius: 16px;
-            --transicion: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -25,101 +24,53 @@
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
             background: linear-gradient(160deg, #fef5ec 0%, #fdf0e0 25%, #fbe8d3 50%, #fdf2e8 75%, #fef9f4 100%);
-            background-attachment: fixed;
-            min-height: 100vh;
-            color: var(--texto);
-            line-height: 1.6;
+            min-height: 100vh; color: var(--texto); line-height: 1.6;
         }
 
         .banner {
             background: linear-gradient(135deg, #FEC89A 0%, #FDBB7C 15%, #f0a07a 30%, #d4897a 45%, #b87078 60%, #8B3A42 78%, #722F37 100%);
-            padding: 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 24px rgba(114, 47, 55, 0.3);
+            padding: 16px 28px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 24px rgba(114, 47, 55, 0.3);
+            display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
         }
-        .banner-inner {
-            max-width: 1300px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 28px;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-        .banner-logo { display: flex; align-items: center; gap: 14px; }
-        .banner-icono {
-            width: 50px; height: 50px; background: rgba(255,255,255,0.2); border-radius: 14px;
-            display: flex; align-items: center; justify-content: center; font-size: 28px;
-            backdrop-filter: blur(10px); border: 2px solid rgba(255,255,255,0.3);
-        }
-        .banner h1 { font-size: 1.7rem; font-weight: 700; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-        .banner-subtitle { font-size: 0.85rem; color: rgba(255,255,255,0.85); }
-        .banner-badge {
-            background: rgba(255,255,255,0.22); backdrop-filter: blur(12px); border-radius: 40px;
-            padding: 10px 20px; color: #fff; font-weight: 600; display: flex; align-items: center; gap: 8px;
-        }
+        .banner h1 { font-size: 1.7rem; color: #fff; }
+        .banner-badge { background: rgba(255,255,255,0.22); padding: 10px 20px; border-radius: 40px; color: #fff; display: flex; align-items: center; gap: 8px; }
         .punto { width: 10px; height: 10px; border-radius: 50%; background: #4CAF50; animation: pulso 2s infinite; }
-        @keyframes pulso {
-            0%,100% { box-shadow: 0 0 0 0 rgba(76,175,80,0.7); }
-            50% { box-shadow: 0 0 0 12px rgba(76,175,80,0); }
-        }
+        @keyframes pulso { 0%,100% { box-shadow: 0 0 0 0 rgba(76,175,80,0.7); } 50% { box-shadow: 0 0 0 12px rgba(76,175,80,0); } }
 
-        .contenedor-principal {
-            max-width: 1300px; margin: 0 auto; padding: 24px 20px 40px;
-            display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
-        }
+        .contenedor-principal { max-width: 1300px; margin: 0 auto; padding: 24px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
         @media (max-width: 1024px) { .contenedor-principal { grid-template-columns: 1fr; } }
 
         .tarjeta {
-            background: var(--blanco); border-radius: var(--borde-radius); padding: 28px 24px;
-            box-shadow: var(--sombra); border: 1px solid rgba(114,47,55,0.06); transition: var(--transicion);
-            position: relative; overflow: hidden;
+            background: #fff; border-radius: var(--borde-radius); padding: 28px 24px; box-shadow: var(--sombra);
+            border: 1px solid rgba(114,47,55,0.06); position: relative; overflow: hidden;
         }
-        .tarjeta::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
-            background: linear-gradient(90deg, var(--durazno), var(--vino-claro), var(--vino));
-        }
-        .tarjeta h2 { font-size: 1.3rem; font-weight: 700; color: var(--vino); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .tarjeta::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--durazno), var(--vino-claro), var(--vino)); }
+        .tarjeta h2 { color: var(--vino); margin-bottom: 20px; }
+
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
         .campo-form { display: flex; flex-direction: column; gap: 5px; }
         .campo-form.completo { grid-column: 1 / -1; }
         .campo-form label { font-weight: 600; font-size: 0.75rem; color: var(--vino); text-transform: uppercase; }
         .campo-form input, .campo-form select, .campo-form textarea {
-            padding: 11px 14px; border: 2px solid #e8d5cc; border-radius: 10px; font-size: 0.95rem;
-            background: #fefaf7; color: var(--texto); transition: var(--transicion);
-        }
-        .campo-form input:focus, .campo-form select:focus, .campo-form textarea:focus {
-            border-color: var(--vino-claro); box-shadow: 0 0 0 4px rgba(114,47,55,0.08); outline: none;
+            padding: 11px 14px; border: 2px solid #e8d5cc; border-radius: 10px; font-size: 0.95rem; background: #fefaf7;
         }
         .btn-enviar {
-            grid-column: 1 / -1; background: linear-gradient(135deg, var(--vino), var(--vino-oscuro));
-            color: #fff; border: none; padding: 14px 28px; border-radius: 12px; font-weight: 700;
-            cursor: pointer; text-transform: uppercase; transition: var(--transicion);
+            grid-column: 1 / -1; background: linear-gradient(135deg, var(--vino), var(--vino-oscuro)); color: #fff;
+            border: none; padding: 14px 28px; border-radius: 12px; font-weight: 700; cursor: pointer; text-transform: uppercase;
             box-shadow: 0 4px 16px rgba(114,47,55,0.3);
         }
-        .btn-enviar:hover { background: linear-gradient(135deg, var(--vino-claro), var(--vino)); }
         .btn-enviar:disabled { background: #c4a9a0; cursor: not-allowed; }
 
-        .notificacion {
-            padding: 16px 20px; border-radius: 12px; margin-top: 16px; font-weight: 600; display: flex; gap: 10px;
-        }
+        .notificacion { padding: 16px 20px; border-radius: 12px; margin-top: 16px; font-weight: 600; display: flex; gap: 10px; }
         .notificacion.exito { background: #e8f5e9; border: 2px solid #4CAF50; color: #1b5e20; }
         .notificacion.error { background: #ffebee; border: 2px solid #D32F2F; color: #7f0000; }
         .notificacion.advertencia { background: #fff8e1; border: 2px solid #F9A825; color: #5d3a00; }
 
         .tabla-contenedor { overflow-x: auto; max-height: 450px; border-radius: 12px; border: 1px solid #f0e3da; }
         table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 700px; }
-        thead { position: sticky; top: 0; z-index: 10; }
-        thead th {
-            background: linear-gradient(180deg, #fdf0e4, #fbe8d5); color: var(--vino); padding: 13px 10px;
-            text-align: left; font-size: 0.75rem; text-transform: uppercase; border-bottom: 3px solid var(--vino);
-        }
+        thead th { background: linear-gradient(180deg, #fdf0e4, #fbe8d5); color: var(--vino); padding: 13px 10px; text-align: left; font-size: 0.75rem; text-transform: uppercase; border-bottom: 3px solid var(--vino); }
         tbody td { padding: 11px 10px; border-bottom: 1px solid #f5e8de; }
-        tbody tr:hover { background: #fef9f4; }
         .conflicto-fila { background: #fff5f5 !important; border-left: 4px solid #D32F2F; }
         .estado-badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-weight: 700; font-size: 0.75rem; }
         .estado-pendiente { background: #fff3e0; color: #e65100; }
@@ -128,85 +79,60 @@
         .estado-cancelado { background: #fce4ec; color: #880e4f; }
 
         .calendario-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
-        .calendario-dia-header { font-weight: 700; color: var(--vino); padding: 8px; background: #fdf0e4; border-radius: 8px; }
-        .calendario-dia {
-            aspect-ratio: 1; border-radius: 10px; padding: 5px; cursor: pointer; background: #fefaf7;
-            border: 2px solid transparent; display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        .calendario-dia:hover { background: #fdf0e4; border-color: var(--durazno-oscuro); }
-        .calendario-dia.hoy { background: var(--vino); color: #fff; font-weight: 700; }
+        .calendario-dia { aspect-ratio: 1; border-radius: 10px; padding: 5px; background: #fefaf7; border: 2px solid transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
+        .calendario-dia.hoy { background: var(--vino); color: #fff; }
         .calendario-dia.con-entregas { background: #fff0e6; border-color: var(--durazno-oscuro); }
         .calendario-dia.con-conflicto { background: #ffebee; border-color: #D32F2F; animation: pulso 2s infinite; }
-        .calendario-dia.vacio { background: transparent; cursor: default; border: none; }
-
-        .tooltip-entrega {
-            display: none; position: fixed; background: #fff; border: 2px solid var(--vino); border-radius: 12px;
-            padding: 14px 18px; box-shadow: 0 12px 40px rgba(114,47,55,0.2); z-index: 2000; max-width: 280px; pointer-events: none;
-        }
+        .tooltip-entrega { display: none; position: fixed; background: #fff; border: 2px solid var(--vino); border-radius: 12px; padding: 14px 18px; z-index: 2000; max-width: 280px; pointer-events: none; }
         .tooltip-entrega.visible { display: block; }
-
         .btn-accion { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 4px 8px; border-radius: 8px; color: var(--vino); }
         .btn-accion:hover { background: rgba(114,47,55,0.1); }
-        .btn-accion.editar:hover { color: #0d47a1; }
-        .btn-accion.eliminar:hover { color: #D32F2F; }
-        .acciones-col { white-space: nowrap; text-align: center; }
     </style>
 </head>
 <body>
     <header class="banner">
-        <div class="banner-inner">
-            <div class="banner-logo">
-                <div>
-                    <h1>Gestión de Entregas</h1>
-                    <p class="banner-subtitle">Sistema de registro y calendario</p>
-                </div>
-            </div>
-            <div class="banner-badge">
-                <span class="punto"></span>
-                <span id="contador-entregas">0 entregas hoy</span>
-            </div>
-        </div>
+        <div> <h1 style="display:inline;">Gestión de Entregas</h1></div>
+        <div class="banner-badge"><span class="punto"></span> <span id="contador-entregas">0 entregas hoy</span></div>
     </header>
 
     <div class="contenedor-principal">
         <div class="tarjeta">
-            <h2><span></span> <span id="titulo-formulario">Registrar Nuevo Pedido</span></h2>
-            <form id="form-pedido" novalidate>
-                <input type="hidden" id="editando-id" value="">
+            <h2> <span id="titulo-formulario">Registrar Nuevo Pedido</span></h2>
+            <form id="form-pedido">
+                <input type="hidden" id="editando-id">
                 <div class="form-grid">
                     <div class="campo-form"><label>ID Pedido *</label><input type="text" id="id_pedido" placeholder="PED-001" required></div>
-                    <div class="campo-form"><label>Cliente *</label><input type="text" id="cliente" placeholder="Nombre completo" required></div>
+                    <div class="campo-form"><label>Cliente *</label><input type="text" id="cliente" placeholder="Nombre" required></div>
                     <div class="campo-form completo"><label>Dirección *</label><input type="text" id="direccion" placeholder="Calle, número, ciudad" required></div>
-                    <div class="campo-form"><label>Fecha Entrega *</label><input type="date" id="fecha_entrega" required></div>
-                    <div class="campo-form"><label>Hora Entrega *</label><input type="time" id="hora_entrega" required></div>
+                    <div class="campo-form"><label>Fecha *</label><input type="date" id="fecha_entrega" required></div>
+                    <div class="campo-form"><label>Hora *</label><input type="time" id="hora_entrega" required></div>
                     <div class="campo-form">
                         <label>Pago</label>
                         <select id="estado">
-                            <option value="Complet">Completo</option>
-                            <option value="Adelanto">Adelanto</option>
+                            <option value="Anticipo">Anticipo</option>
+                            <option value="Completo">Completo</option>
                         </select>
                     </div>
                     <div class="campo-form"><label>Teléfono *</label><input type="tel" id="telefono" placeholder="+593 555 123 4567" required></div>
-                    <div class="campo-form completo"><label>Notas</label><textarea id="notas" rows="2" placeholder="Instrucciones especiales..."></textarea></div>
+                    <div class="campo-form completo"><label>Notas</label><textarea id="notas" rows="2"></textarea></div>
                     <button type="submit" class="btn-enviar" id="btn-enviar"> Registrar Pedido</button>
-                    <button type="button" class="btn-enviar" id="btn-cancelar-edicion" style="display:none; background:#aaa;" onclick="cancelarEdicion()"> Cancelar Edición</button>
+                    <button type="button" class="btn-enviar" id="btn-cancelar-edicion" style="display:none; background:#aaa;" onclick="cancelarEdicion()"> Cancelar</button>
                 </div>
             </form>
             <div id="zona-notificacion"></div>
         </div>
-
         <div class="tarjeta">
-            <h2><span></span> Calendario Entregas</h2>
+            <h2> Calendario Entregas</h2>
             <div class="calendario-grid" id="calendario-grid"></div>
             <div class="tooltip-entrega" id="tooltip-entrega"></div>
-            <p style="text-align:center;margin-top:12px;font-size:0.79rem;color:var(--gris);"> Días con entregas &nbsp;|&nbsp;  Conflicto horario</p>
+            <p style="text-align:center;margin-top:12px;font-size:0.78rem;"> Días con entregas ·  Conflicto horario</p>
         </div>
 
         <div class="tarjeta" style="grid-column: 1 / -1;">
-            <h2><span></span> Entregas Registradas</h2>
+            <h2> Entregas Registradas <span style="font-size:0.75rem;color:gray;" id="estado-conexion"></span></h2>
             <div class="tabla-contenedor">
                 <table>
-                    <thead><tr><th>ID</th><th>Cliente</th><th>Dirección</th><th>Fecha</th><th>Hora</th><th>Estado</th><th>Teléfono</th><th>Notas</th><th>⚡</th><th></th></tr></thead>
+                    <thead><tr><th>ID</th><th>Cliente</th><th>Dirección</th><th>Fecha</th><th>Hora</th><th>Pago</th><th>Teléfono</th><th>Notas</th><th>⚡</th><th></th></tr></thead>
                     <tbody id="tabla-entregas-body"></tbody>
                 </table>
             </div>
@@ -215,59 +141,78 @@
 
     <script>
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzevMAMfxhtEUe75N3TMgTVGPLDAGcSmXwhaURCQmFXezGM9m0RveF_AGgiM9Z5rd0fWg/exec';
+
         let entregas = [];
         let calendarioMesActual = new Date().getMonth();
         let calendarioAnioActual = new Date().getFullYear();
 
-        function limpiarDatosDemoSiExisten() {
-            const raw = localStorage.getItem('entregas_data');
-            if (!raw) return;
-            try {
-                const data = JSON.parse(raw);
-                if (Array.isArray(data) && data.length === 3 &&
-                    data[0].id_pedido === 'PED-001' &&
-                    data[1].id_pedido === 'PED-002' &&
-                    data[2].id_pedido === 'PED-003') {
-                    localStorage.removeItem('entregas_data');
-                    console.log('Datos demo eliminados automáticamente.');
-                }
-            } catch (e) {}
-        }
-        limpiarDatosDemoSiExisten();
-
         document.addEventListener('DOMContentLoaded', () => {
-            configurarFechaMinima();
+            document.getElementById('fecha_entrega').value = new Date().toISOString().split('T')[0];
+            verificarConexionSheets();
             cargarEntregas();
-            configurarFormulario();
+            document.getElementById('form-pedido').addEventListener('submit', manejarEnvio);
             renderizarCalendario();
-            actualizarContadorEntregasHoy();
         });
 
-        function configurarFechaMinima() {
-            document.getElementById('fecha_entrega').value = new Date().toISOString().split('T')[0];
+        async function verificarConexionSheets() {
+            const estado = document.getElementById('estado-conexion');
+            try {
+                const resp = await fetch(GOOGLE_SCRIPT_URL + '?accion=ping&t=' + Date.now(), { mode: 'cors' });
+                if (resp.ok) {
+                    estado.textContent = '(conectado a Sheets)';
+                    estado.style.color = '#4CAF50';
+                } else {
+                    throw new Error('Error');
+                }
+            } catch (e) {
+                estado.textContent = '(sin conexión – datos locales)';
+                estado.style.color = '#D32F2F';
+            }
         }
 
-        function configurarFormulario() {
-            document.getElementById('form-pedido').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const editando = document.getElementById('editando-id').value;
-                editando ? await actualizarPedido(editando) : await enviarPedido();
-            });
+        async function cargarEntregas() {
+            const estado = document.getElementById('estado-conexion');
+            try {
+                const resp = await fetch(GOOGLE_SCRIPT_URL + '?accion=obtener_entregas&t=' + Date.now(), { mode: 'cors' });
+                if (resp.ok) {
+                    const data = await resp.json();
+                    entregas = Array.isArray(data) ? data : (data.entregas || []);
+                    estado.textContent = '(conectado a Sheets)';
+                    estado.style.color = '#4CAF50';
+                } else {
+                    throw new Error('Error');
+                }
+            } catch (e) {
+                const local = localStorage.getItem('entregas_data');
+                entregas = local ? JSON.parse(local) : [];
+                estado.textContent = '(sin conexión – datos locales)';
+                estado.style.color = '#D32F2F';
+            }
+            actualizarTodo();
         }
 
-        async function enviarPedido() {
+        async function manejarEnvio(e) {
+            e.preventDefault();
+            const editando = document.getElementById('editando-id').value;
+            editando ? await actualizarPedido(editando) : await registrarPedido();
+        }
+
+        async function registrarPedido() {
             const btn = document.getElementById('btn-enviar');
             btn.disabled = true;
             const datos = obtenerDatosFormulario();
-            if (!validarDatos(datos)) { btn.disabled = false; return; }
-            if (entregas.some(e => e.id_pedido === datos.id_pedido)) {
-                mostrarNotificacion(' ID duplicado.', 'error');
-                btn.disabled = false;
-                return;
+            if (!validarDatos(datos, true)) { btn.disabled = false; return; }
+
+            const enviado = await enviarASheets({ ...datos, accion: 'registrar_pedido' });
+            if (enviado) {
+                entregas.push(datos);
+                guardarLocalmente();
+                mostrarNotificacion(' Pedido registrado en Sheets.', 'exito');
+            } else {
+                entregas.push(datos);
+                guardarLocalmente();
+                mostrarNotificacion(' Sin conexión. Guardado localmente.', 'advertencia');
             }
-            await enviarASheets(datos, 'registrar_pedido');
-            entregas.push(datos);
-            guardarLocalmente();
             actualizarTodo();
             limpiarFormulario();
             btn.disabled = false;
@@ -277,59 +222,59 @@
             const btn = document.getElementById('btn-enviar');
             btn.disabled = true;
             const datos = { ...obtenerDatosFormulario(), accion: 'actualizar_pedido', id_original: idOriginal };
-            if (!validarDatos(datos)) { btn.disabled = false; return; }
+            if (!validarDatos(datos, false)) { btn.disabled = false; return; }
             if (datos.id_pedido !== idOriginal && entregas.some(e => e.id_pedido === datos.id_pedido)) {
                 mostrarNotificacion(' El nuevo ID ya existe.', 'error');
                 btn.disabled = false;
                 return;
             }
-            await enviarASheets(datos, 'actualizar_pedido');
-            const index = entregas.findIndex(e => e.id_pedido === idOriginal);
-            if (index !== -1) entregas[index] = datos;
-            guardarLocalmente();
+
+            const enviado = await enviarASheets(datos);
+            if (enviado) {
+                const index = entregas.findIndex(e => e.id_pedido === idOriginal);
+                if (index !== -1) entregas[index] = datos;
+                guardarLocalmente();
+                mostrarNotificacion(' Pedido actualizado en Sheets.', 'exito');
+            } else {
+                const index = entregas.findIndex(e => e.id_pedido === idOriginal);
+                if (index !== -1) entregas[index] = datos;
+                guardarLocalmente();
+                mostrarNotificacion(' Sin conexión. Actualizado localmente.', 'advertencia');
+            }
             actualizarTodo();
             cancelarEdicion();
             btn.disabled = false;
         }
 
-        function editarPedido(id) {
-            const pedido = entregas.find(e => e.id_pedido === id);
-            if (!pedido) return;
-            document.getElementById('editando-id').value = id;
-            document.getElementById('id_pedido').value = pedido.id_pedido;
-            document.getElementById('cliente').value = pedido.cliente;
-            document.getElementById('direccion').value = pedido.direccion;
-            document.getElementById('fecha_entrega').value = pedido.fecha_entrega;
-            document.getElementById('hora_entrega').value = pedido.hora_entrega;
-            document.getElementById('estado').value = pedido.estado;
-            document.getElementById('telefono').value = pedido.telefono;
-            document.getElementById('notas').value = pedido.notas || '';
-            document.getElementById('id_pedido').setAttribute('readonly', true);
-            document.getElementById('titulo-formulario').textContent = '✏️ Editar Pedido';
-            document.getElementById('btn-enviar').innerHTML = '💾 Actualizar Pedido';
-            document.getElementById('btn-cancelar-edicion').style.display = 'block';
-        }
-
         async function eliminarPedido(id) {
             if (!confirm(`¿Eliminar ${id}?`)) return;
-            await fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST', mode: 'no-cors',
-                body: new URLSearchParams({ accion: 'eliminar_pedido', id_pedido: id })
-            });
-            entregas = entregas.filter(e => e.id_pedido !== id);
-            guardarLocalmente();
+            const enviado = await enviarASheets({ accion: 'eliminar_pedido', id_pedido: id });
+            if (enviado) {
+                entregas = entregas.filter(e => e.id_pedido !== id);
+                guardarLocalmente();
+                mostrarNotificacion('🗑️ Eliminado de Sheets.', 'exito');
+            } else {
+                entregas = entregas.filter(e => e.id_pedido !== id);
+                guardarLocalmente();
+                mostrarNotificacion('🗑️ Eliminado localmente (sin conexión).', 'advertencia');
+            }
             actualizarTodo();
             if (document.getElementById('editando-id').value === id) cancelarEdicion();
-            mostrarNotificacion('🗑️ Pedido eliminado.', 'exito');
         }
 
-        function cancelarEdicion() {
-            document.getElementById('editando-id').value = '';
-            document.getElementById('id_pedido').removeAttribute('readonly');
-            document.getElementById('titulo-formulario').textContent = ' Registrar Nuevo Pedido';
-            document.getElementById('btn-enviar').innerHTML = ' Registrar Pedido';
-            document.getElementById('btn-cancelar-edicion').style.display = 'none';
-            limpiarFormulario();
+        async function enviarASheets(parametros) {
+            try {
+                const resp = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'cors', 
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams(parametros)
+                });
+                return resp.ok;
+            } catch (error) {
+                console.warn('Error de conexión con Sheets:', error);
+                return false;
+            }
         }
 
         function obtenerDatosFormulario() {
@@ -345,68 +290,73 @@
             };
         }
 
-        function validarDatos(d) {
+        function validarDatos(d, esNuevo) {
             if (!d.id_pedido || !d.cliente || !d.direccion || !d.fecha_entrega || !d.hora_entrega || !d.telefono) {
-                mostrarNotificacion(' Completa todos los campos obligatorios.', 'advertencia');
+                mostrarNotificacion('⚠️ Completa todos los campos obligatorios.', 'advertencia');
+                return false;
+            }
+            if (esNuevo && entregas.some(e => e.id_pedido === d.id_pedido)) {
+                mostrarNotificacion(' El ID ya existe.', 'error');
                 return false;
             }
             return true;
-        }
-
-        async function enviarASheets(datos, accion) {
-            try {
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST', mode: 'no-cors',
-                    body: new URLSearchParams({ ...datos, accion })
-                });
-            } catch (e) {
-                console.warn('Sin conexión a Sheets – solo almacenamiento local.');
-            }
         }
 
         function guardarLocalmente() {
             localStorage.setItem('entregas_data', JSON.stringify(entregas));
         }
 
-        async function cargarEntregas() {
-            try {
-                const resp = await fetch(GOOGLE_SCRIPT_URL + '?accion=obtener_entregas');
-                if (resp.ok) {
-                    const data = await resp.json();
-                    entregas = Array.isArray(data) ? data : (data.entregas || []);
-                }
-            } catch (e) {
-                const local = localStorage.getItem('entregas_data');
-                entregas = local ? JSON.parse(local) : [];
-            }
-            actualizarTodo();
+        function limpiarFormulario() {
+            document.getElementById('id_pedido').value = '';
+            document.getElementById('cliente').value = '';
+            document.getElementById('direccion').value = '';
+            document.getElementById('telefono').value = '';
+            document.getElementById('notas').value = '';
+            document.getElementById('estado').value = 'Pendiente';
+            document.getElementById('fecha_entrega').value = new Date().toISOString().split('T')[0];
+            document.getElementById('hora_entrega').value = '';
+        }
+
+        function cancelarEdicion() {
+            document.getElementById('editando-id').value = '';
+            document.getElementById('id_pedido').removeAttribute('readonly');
+            document.getElementById('titulo-formulario').textContent = ' Registrar Nuevo Pedido';
+            document.getElementById('btn-enviar').innerHTML = ' Registrar Pedido';
+            document.getElementById('btn-cancelar-edicion').style.display = 'none';
+            limpiarFormulario();
+        }
+
+        function mostrarNotificacion(msg, tipo) {
+            const zona = document.getElementById('zona-notificacion');
+            zona.innerHTML = `<div class="notificacion ${tipo}">${msg}</div>`;
+            setTimeout(() => zona.innerHTML = '', 5000);
         }
 
         function actualizarTodo() {
-            actualizarTablaEntregas();
-            actualizarContadorEntregasHoy();
+            actualizarTabla();
+            actualizarContador();
             renderizarCalendario();
         }
 
-        function actualizarTablaEntregas() {
+        function actualizarTabla() {
             const tbody = document.getElementById('tabla-entregas-body');
             if (!entregas.length) {
-                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:30px;">No hay entregas registradas aún.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:30px;">No hay entregas.</td></tr>';
                 return;
             }
             const conflictos = detectarConflictos();
             const ordenadas = [...entregas].sort((a,b) => new Date(a.fecha_entrega+'T'+a.hora_entrega) - new Date(b.fecha_entrega+'T'+b.hora_entrega));
             tbody.innerHTML = ordenadas.map(e => {
-                const conflicto = conflictos.has(e.id_pedido);
-                return `<tr class="${conflicto ? 'conflicto-fila' : ''}">
+                const conf = conflictos.has(e.id_pedido);
+                return `<tr class="${conf ? 'conflicto-fila' : ''}">
                     <td>${e.id_pedido}</td><td>${e.cliente}</td><td>${e.direccion}</td>
                     <td>${e.fecha_entrega}</td><td>${e.hora_entrega}</td>
                     <td><span class="estado-badge estado-${e.estado.toLowerCase().replace(' ','-')}">${e.estado}</span></td>
                     <td>${e.telefono}</td><td>${e.notas || '—'}</td>
-                    <td>${conflicto ? '⚠️' : '✓'}</td>
-                    <td class="acciones-col">
-                        <button class="btn-accion editar" onclick="editarPedido('${e.id_pedido}')">✏️</button>
-                        <button class="btn-accion eliminar" onclick="eliminarPedido('${e.id_pedido}')">🗑️</button>
+                    <td>${conf ? '⚠️' : '✓'}</td>
+                    <td>
+                        <button class="btn-accion" onclick="editarPedido('${e.id_pedido}')">✏️</button>
+                        <button class="btn-accion" onclick="eliminarPedido('${e.id_pedido}')">🗑️</button>
                     </td>
                 </tr>`;
             }).join('');
@@ -427,85 +377,79 @@
             });
             return set;
         }
-
-        function convertirHora(h) { if (!h) return 0; const [hh,mm] = h.split(':'); return +hh*60 + +mm; }
-
-        function actualizarContadorEntregasHoy() {
+        function convertirHora(h) { const [hh,mm] = h.split(':'); return +hh*60 + (+mm); }
+        function actualizarContador() {
             const hoy = new Date().toISOString().split('T')[0];
             const c = entregas.filter(e => e.fecha_entrega === hoy).length;
             document.getElementById('contador-entregas').textContent = `${c} entrega${c!==1?'s':''} hoy`;
         }
-
-        function limpiarFormulario() {
-            document.getElementById('id_pedido').value = '';
-            document.getElementById('cliente').value = '';
-            document.getElementById('direccion').value = '';
-            document.getElementById('telefono').value = '';
-            document.getElementById('notas').value = '';
-            document.getElementById('estado').value = 'Pendiente';
-            configurarFechaMinima();
-            document.getElementById('hora_entrega').value = '';
-        }
-
-        function mostrarNotificacion(msg, tipo) {
-            const zona = document.getElementById('zona-notificacion');
-            zona.innerHTML = `<div class="notificacion ${tipo}">${msg}</div>`;
-            setTimeout(() => { zona.innerHTML = ''; }, 5000);
+        function editarPedido(id) {
+            const p = entregas.find(e => e.id_pedido === id);
+            if (!p) return;
+            document.getElementById('editando-id').value = id;
+            document.getElementById('id_pedido').value = p.id_pedido;
+            document.getElementById('cliente').value = p.cliente;
+            document.getElementById('direccion').value = p.direccion;
+            document.getElementById('fecha_entrega').value = p.fecha_entrega;
+            document.getElementById('hora_entrega').value = p.hora_entrega;
+            document.getElementById('estado').value = p.estado;
+            document.getElementById('telefono').value = p.telefono;
+            document.getElementById('notas').value = p.notas || '';
+            document.getElementById('id_pedido').setAttribute('readonly', true);
+            document.getElementById('titulo-formulario').textContent = '✏️ Editar Pedido';
+            document.getElementById('btn-enviar').innerHTML = '💾 Actualizar';
+            document.getElementById('btn-cancelar-edicion').style.display = 'block';
         }
 
         function renderizarCalendario() {
             const grid = document.getElementById('calendario-grid');
             const year = calendarioAnioActual, month = calendarioMesActual;
             const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-            const diasSemana = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
-            const primerDia = new Date(year, month, 1), ultimoDia = new Date(year, month+1, 0);
+            const dias = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+            const primerDia = new Date(year, month, 1).getDay();
+            const ultimoDia = new Date(year, month+1, 0).getDate();
             const conflictos = detectarConflictos();
             const grupos = {};
             entregas.forEach(e => { if (!grupos[e.fecha_entrega]) grupos[e.fecha_entrega] = []; grupos[e.fecha_entrega].push(e); });
 
-            let html = `<div class="calendario-mes-header">
-                <button onclick="cambiarMes(-1)">◀</button><span>${meses[month]} ${year}</span><button onclick="cambiarMes(1)">▶</button>
+            let html = `<div style="grid-column:1/-1;display:flex;justify-content:space-between;font-weight:700;color:var(--vino);">
+                <button onclick="cambiarMes(-1)">◀</button> ${meses[month]} ${year} <button onclick="cambiarMes(1)">▶</button>
             </div>`;
-            diasSemana.forEach(d => html += `<div class="calendario-dia-header">${d}</div>`);
-            for (let i=0; i<primerDia.getDay(); i++) html += '<div class="calendario-dia vacio"></div>';
-
-            for (let d=1; d<=ultimoDia.getDate(); d++) {
+            dias.forEach(d => html += `<div style="font-weight:700;color:var(--vino);padding:8px;background:#fdf0e4;border-radius:8px;">${d}</div>`);
+            for (let i=0; i<primerDia; i++) html += '<div></div>';
+            for (let d=1; d<=ultimoDia; d++) {
                 const fecha = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                const entregasDia = grupos[fecha] || [];
+                const lista = grupos[fecha] || [];
                 const esHoy = fecha === new Date().toISOString().split('T')[0];
-                const conflicto = entregasDia.some(e => conflictos.has(e.id_pedido));
+                const conflicto = lista.some(e => conflictos.has(e.id_pedido));
                 let clase = 'calendario-dia';
                 if (esHoy) clase += ' hoy';
                 if (conflicto) clase += ' con-conflicto';
-                else if (entregasDia.length) clase += ' con-entregas';
-                html += `<div class="${clase}" onclick="mostrarDetalleDia('${fecha}')" onmouseenter="mostrarTooltip(event,'${fecha}')" onmouseleave="ocultarTooltip()">${d}${entregasDia.length ? `<small>${entregasDia.length}📦</small>` : ''}</div>`;
+                else if (lista.length) clase += ' con-entregas';
+                html += `<div class="${clase}" onclick="mostrarDetalle('${fecha}')" onmouseenter="tooltip(event,'${fecha}')" onmouseleave="ocultarTooltip()">${d}${lista.length ? `<small>${lista.length}📦</small>` : ''}</div>`;
             }
             grid.innerHTML = html;
         }
-
-        window.cambiarMes = (delta) => {
-            calendarioMesActual += delta;
+        window.cambiarMes = (d) => {
+            calendarioMesActual += d;
             if (calendarioMesActual < 0) { calendarioMesActual = 11; calendarioAnioActual--; }
             else if (calendarioMesActual > 11) { calendarioMesActual = 0; calendarioAnioActual++; }
             renderizarCalendario();
         };
-
-        window.mostrarTooltip = (e, fecha) => {
-            const entregasDia = entregas.filter(e => e.fecha_entrega === fecha);
-            if (!entregasDia.length) return;
+        window.tooltip = (e, fecha) => {
+            const lista = entregas.filter(p => p.fecha_entrega === fecha);
+            if (!lista.length) return;
             const tooltip = document.getElementById('tooltip-entrega');
-            const conflictos = detectarConflictos();
-            tooltip.innerHTML = `<h4>${fecha}</h4>` + entregasDia.map(e => `<div>${e.hora_entrega} - ${e.cliente} ${conflictos.has(e.id_pedido)?'⚠️':''}</div>`).join('');
+            tooltip.innerHTML = `<h4>${fecha}</h4>` + lista.map(p => `<div>${p.hora_entrega} ${p.cliente} ${detectarConflictos().has(p.id_pedido)?'':''}</div>`).join('');
             tooltip.classList.add('visible');
             const rect = e.target.getBoundingClientRect();
             tooltip.style.left = Math.min(rect.right+10, window.innerWidth-300) + 'px';
             tooltip.style.top = Math.min(rect.top, window.innerHeight-150) + 'px';
         };
         window.ocultarTooltip = () => document.getElementById('tooltip-entrega').classList.remove('visible');
-        window.mostrarDetalleDia = (fecha) => {
+        window.mostrarDetalle = (fecha) => {
             const lista = entregas.filter(e => e.fecha_entrega === fecha);
-            if (!lista.length) return;
-            alert(`Entregas del ${fecha}:\n` + lista.map(e => `${e.hora_entrega} ${e.cliente} ${e.estado}`).join('\n'));
+            alert(lista.length ? `Entregas del ${fecha}:\n` + lista.map(e => `${e.hora_entrega} ${e.cliente} ${e.estado}`).join('\n') : 'Sin entregas.');
         };
 
         setInterval(cargarEntregas, 30000);
