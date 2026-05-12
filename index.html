@@ -594,7 +594,6 @@
             margin-bottom: 4px;
         }
 
-        /* Botones de acción en tabla */
         .btn-accion {
             background: none;
             border: none;
@@ -650,7 +649,6 @@
     <header class="banner">
         <div class="banner-inner">
             <div class="banner-logo">
-                <div class="banner-icono">📦</div>
                 <div>
                     <h1>Gestión de Entregas</h1>
                     <p class="banner-subtitle">Sistema de registro y calendario</p>
@@ -666,7 +664,7 @@
     <div class="contenedor-principal">
         <!-- FORMULARIO -->
         <div class="tarjeta" id="tarjeta-formulario">
-            <h2><span class="emoji-titulo">📝</span> <span id="titulo-formulario">Registrar Nuevo Pedido</span></h2>
+            <h2><span class="emoji-titulo"></span> <span id="titulo-formulario">Registrar Nuevo Pedido</span></h2>
             <form id="form-pedido" novalidate>
                 <input type="hidden" id="editando-id" value="">
                 <div class="form-grid">
@@ -693,10 +691,8 @@
                     <div class="campo-form">
                         <label for="estado">Estado</label>
                         <select id="estado" name="estado">
-                            <option value="Pendiente">Pendiente</option>
-                            <option value="En Ruta">En Ruta</option>
-                            <option value="Entregado">Entregado</option>
-                            <option value="Cancelado">Cancelado</option>
+                            <option value="Pagado completo">Pagado completo</option>
+                            <option value="Pagado anticipo">Pagado anticipo</option>
                         </select>
                     </div>
                     <div class="campo-form">
@@ -709,30 +705,27 @@
                     </div>
                     <button type="submit" class="btn-enviar" id="btn-enviar">
                         <span class="spinner"></span>
-                        <span class="texto-btn">🚀 Registrar Pedido</span>
+                        <span class="texto-btn"> Registrar Pedido</span>
                     </button>
                     <button type="button" class="btn-enviar" id="btn-cancelar-edicion" style="display:none; background: #aaa; margin-top: 0;"
                         onclick="cancelarEdicion()">
-                        ❌ Cancelar Edición
+                         Cancelar Edición
                     </button>
                 </div>
             </form>
             <div id="zona-notificacion"></div>
         </div>
 
-        <!-- CALENDARIO -->
         <div class="tarjeta" id="tarjeta-calendario">
-            <h2><span class="emoji-titulo">📅</span> Calendario Entregas</h2>
+            <h2><span class="emoji-titulo"></span> Calendario Entregas</h2>
             <div class="calendario-grid" id="calendario-grid"></div>
             <div class="tooltip-entrega" id="tooltip-entrega"></div>
             <p style="text-align:center;margin-top:12px;font-size:0.78rem;color:var(--gris);">
-                🟡 Días con entregas &nbsp;|&nbsp; 🔴 Días con conflicto de horario
+                 Días con entregas &nbsp;|&nbsp;  Días con conflicto de horario
             </p>
         </div>
-
-        <!-- TABLA -->
         <div class="tarjeta" style="grid-column: 1 / -1;">
-            <h2><span class="emoji-titulo">📋</span> Entregas Registradas
+            <h2><span class="emoji-titulo"></span> Entregas Registradas
                 <span style="font-size:0.75rem;font-weight:400;color:var(--gris);">(Datos sincronizados con Google Sheets)</span>
             </h2>
             <div class="tabla-contenedor">
@@ -808,15 +801,14 @@
 
             if (!formData.id_pedido || !formData.cliente || !formData.direccion ||
                 !formData.fecha_entrega || !formData.hora_entrega || !formData.telefono) {
-                mostrarNotificacion('⚠️ Por favor completa todos los campos obligatorios (*).', 'advertencia');
+                mostrarNotificacion(' Por favor completa todos los campos obligatorios (*).', 'advertencia');
                 btn.classList.remove('cargando');
                 btn.disabled = false;
                 return;
             }
 
-            // Verificar ID duplicado
             if (entregas.some(e => e.id_pedido === formData.id_pedido)) {
-                mostrarNotificacion('❌ Ya existe un pedido con ese ID. Usa otro identificador.', 'error');
+                mostrarNotificacion(' Ya existe un pedido con ese ID. Usa otro identificador.', 'error');
                 btn.classList.remove('cargando');
                 btn.disabled = false;
                 return;
@@ -829,7 +821,7 @@
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: new URLSearchParams(formData).toString(),
                 });
-                mostrarNotificacion('✅ Pedido enviado correctamente.', 'exito');
+                mostrarNotificacion(' Pedido enviado correctamente.', 'exito');
                 setTimeout(async () => {
                     await cargarEntregas();
                     renderizarCalendario();
@@ -838,14 +830,13 @@
                 }, 1500);
             } catch (error) {
                 console.error('Error al enviar:', error);
-                // Guardado local de respaldo
                 entregas.push(formData);
                 guardarLocalmente();
                 actualizarTablaEntregas();
                 actualizarContadorEntregasHoy();
                 renderizarCalendario();
                 limpiarFormulario();
-                mostrarNotificacion('⚠️ Sin conexión. Pedido guardado localmente.', 'advertencia');
+                mostrarNotificacion(' Sin conexión. Pedido guardado localmente.', 'advertencia');
             } finally {
                 btn.classList.remove('cargando');
                 btn.disabled = false;
@@ -875,15 +866,14 @@
 
             if (!formData.id_pedido || !formData.cliente || !formData.direccion ||
                 !formData.fecha_entrega || !formData.hora_entrega || !formData.telefono) {
-                mostrarNotificacion('⚠️ Completa todos los campos obligatorios.', 'advertencia');
+                mostrarNotificacion(' Completa todos los campos obligatorios.', 'advertencia');
                 btn.classList.remove('cargando');
                 btn.disabled = false;
                 return;
             }
 
-            // Si cambió el ID, verificar que no exista ya (excepto el original)
             if (formData.id_pedido !== idOriginal && entregas.some(e => e.id_pedido === formData.id_pedido)) {
-                mostrarNotificacion('❌ Ya existe otro pedido con ese ID.', 'error');
+                mostrarNotificacion(' Ya existe otro pedido con ese ID.', 'error');
                 btn.classList.remove('cargando');
                 btn.disabled = false;
                 return;
@@ -896,7 +886,7 @@
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: new URLSearchParams(formData).toString(),
                 });
-                mostrarNotificacion('✅ Pedido actualizado correctamente.', 'exito');
+                mostrarNotificacion(' Pedido actualizado correctamente.', 'exito');
                 setTimeout(async () => {
                     await cargarEntregas();
                     renderizarCalendario();
@@ -904,7 +894,6 @@
                     cancelarEdicion();
                 }, 1500);
             } catch (error) {
-                // Actualización local
                 const index = entregas.findIndex(e => e.id_pedido === idOriginal);
                 if (index !== -1) {
                     entregas[index] = { ...formData };
@@ -913,7 +902,7 @@
                     actualizarContadorEntregasHoy();
                     renderizarCalendario();
                     cancelarEdicion();
-                    mostrarNotificacion('✅ Pedido actualizado localmente.', 'exito');
+                    mostrarNotificacion(' Pedido actualizado localmente.', 'exito');
                 }
             } finally {
                 btn.classList.remove('cargando');
@@ -956,7 +945,6 @@
                     actualizarContadorEntregasHoy();
                 }, 1000);
             } catch (error) {
-                // Eliminación local
                 entregas = entregas.filter(e => e.id_pedido !== idPedido);
                 guardarLocalmente();
                 actualizarTablaEntregas();
@@ -964,7 +952,6 @@
                 renderizarCalendario();
                 mostrarNotificacion('🗑️ Pedido eliminado localmente.', 'exito');
             }
-            // Si estábamos editando ese pedido, cancelar edición
             if (document.getElementById('editando-id').value === idPedido) {
                 cancelarEdicion();
             }
@@ -973,8 +960,8 @@
         function cancelarEdicion() {
             document.getElementById('editando-id').value = '';
             document.getElementById('id_pedido').removeAttribute('readonly');
-            document.getElementById('titulo-formulario').textContent = '📝 Registrar Nuevo Pedido';
-            document.querySelector('#btn-enviar .texto-btn').textContent = '🚀 Registrar Pedido';
+            document.getElementById('titulo-formulario').textContent = ' Registrar Nuevo Pedido';
+            document.querySelector('#btn-enviar .texto-btn').textContent = ' Registrar Pedido';
             document.getElementById('btn-cancelar-edicion').style.display = 'none';
             limpiarFormulario();
         }
@@ -1161,7 +1148,6 @@
             }, 6000);
         }
 
-        // ========== CALENDARIO ==========
         function renderizarCalendario() {
             const grid = document.getElementById('calendario-grid');
             const anio = calendarioAnioActual;
@@ -1229,9 +1215,9 @@
             const entregasDia = entregas.filter(e => e.fecha_entrega === fecha);
             if (!entregasDia.length) return;
             const conflictos = detectarConflictos();
-            let html = `<h4>📅 ${formatearFecha(fecha)}</h4>`;
+            let html = `<h4> ${formatearFecha(fecha)}</h4>`;
             entregasDia.forEach(e => {
-                const conflicto = conflictos.has(e.id_pedido) ? ' ⚠️ <span style="color:#D32F2F;">Conflicto</span>' : '';
+                const conflicto = conflictos.has(e.id_pedido) ? '  <span style="color:#D32F2F;">Conflicto</span>' : '';
                 html += `
                     <div style="margin:4px 0;padding:4px 0;border-bottom:1px solid #eee;">
                         <strong>${e.hora_entrega||'—'}</strong> - ${escaparHTML(e.cliente)}<br>
@@ -1260,20 +1246,19 @@
         window.mostrarDetalleDia = function(fecha) {
             const entregasDia = entregas.filter(e => e.fecha_entrega === fecha);
             if (!entregasDia.length) {
-                mostrarNotificacion('📭 No hay entregas para esta fecha.', 'advertencia');
+                mostrarNotificacion(' No hay entregas para esta fecha.', 'advertencia');
                 return;
             }
             const conflictos = detectarConflictos();
             const detalles = entregasDia.map(e => {
-                const c = conflictos.has(e.id_pedido) ? ' ⚠️ CONFLICTO' : '';
+                const c = conflictos.has(e.id_pedido) ? '  CONFLICTO' : '';
                 return `• ${e.hora_entrega} | ${e.cliente} | ${e.estado}${c}`;
             }).join('\n');
-            alert(`📅 Entregas del ${formatearFecha(fecha)}:\n\n${detalles}`);
+            alert(` Entregas del ${formatearFecha(fecha)}:\n\n${detalles}`);
         };
 
         document.addEventListener('scroll', () => document.getElementById('tooltip-entrega').classList.remove('visible'), { passive: true });
 
-        // Actualización periódica
         setInterval(async () => {
             await cargarEntregas();
             renderizarCalendario();
