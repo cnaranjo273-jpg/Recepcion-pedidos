@@ -662,7 +662,6 @@
     </header>
 
     <div class="contenedor-principal">
-        <!-- FORMULARIO -->
         <div class="tarjeta" id="tarjeta-formulario">
             <h2><span class="emoji-titulo"></span> <span id="titulo-formulario">Registrar Nuevo Pedido</span></h2>
             <form id="form-pedido" novalidate>
@@ -691,8 +690,10 @@
                     <div class="campo-form">
                         <label for="estado">Estado</label>
                         <select id="estado" name="estado">
-                            <option value="Pagado completo">Pagado completo</option>
-                            <option value="Pagado anticipo">Pagado anticipo</option>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="En Ruta">En Ruta</option>
+                            <option value="Entregado">Entregado</option>
+                            <option value="Cancelado">Cancelado</option>
                         </select>
                     </div>
                     <div class="campo-form">
@@ -724,6 +725,8 @@
                  Días con entregas &nbsp;|&nbsp;  Días con conflicto de horario
             </p>
         </div>
+
+        <!-- TABLA -->
         <div class="tarjeta" style="grid-column: 1 / -1;">
             <h2><span class="emoji-titulo"></span> Entregas Registradas
                 <span style="font-size:0.75rem;font-weight:400;color:var(--gris);">(Datos sincronizados con Google Sheets)</span>
@@ -871,7 +874,6 @@
                 btn.disabled = false;
                 return;
             }
-
             if (formData.id_pedido !== idOriginal && entregas.some(e => e.id_pedido === formData.id_pedido)) {
                 mostrarNotificacion(' Ya existe otro pedido con ese ID.', 'error');
                 btn.classList.remove('cargando');
@@ -978,6 +980,8 @@
                 } catch (e) {
                     entregas = [];
                 }
+            } else {
+                entregas = [];
             }
         }
 
@@ -994,12 +998,10 @@
                     }
                 } else {
                     cargarLocalmente();
-                    if (entregas.length === 0) usarDatosDemo();
                 }
             } catch (error) {
                 console.warn('Usando datos locales (sin conexión).');
                 cargarLocalmente();
-                if (entregas.length === 0) usarDatosDemo();
             }
             actualizarTablaEntregas();
             actualizarContadorEntregasHoy();
@@ -1009,7 +1011,7 @@
         function actualizarTablaEntregas() {
             const tbody = document.getElementById('tabla-entregas-body');
             if (entregas.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:30px;">No hay entregas registradas.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:30px;">No hay entregas registradas aún.</td></tr>';
                 return;
             }
             const conflictos = detectarConflictos();
@@ -1120,7 +1122,7 @@
             const iconos = { exito: '✅', error: '❌', advertencia: '⚠️' };
             zona.innerHTML = `
                 <div class="notificacion ${tipo}">
-                    <span class="icono-notif">${iconos[tipo] || 'ℹ️'}</span>
+                    <span class="icono-notif">${iconos[tipo] || ''}</span>
                     <span>${mensaje}</span>
                 </div>
             `;
@@ -1181,7 +1183,7 @@
                          onmouseleave="ocultarTooltip()"
                          onclick="mostrarDetalleDia('${fecha}')">
                         ${dia}
-                        ${tieneEntregas ? `<small style="font-size:0.6rem;">${entregasDia.length}📦</small>` : ''}
+                        ${tieneEntregas ? `<small style="font-size:0.6rem;">${entregasDia.length}</small>` : ''}
                     </div>
                 `;
             }
